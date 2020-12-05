@@ -1,0 +1,3 @@
+Emulator of Czech TNS computer
+
+not fully working yet...
