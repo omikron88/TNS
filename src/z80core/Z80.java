@@ -1637,7 +1637,7 @@ public class Z80 {
         ffIFF1 = ffIFF2 = false;
         push(regPC);  // el push ańadirá 6 t-estados (+contended si toca)
         if (modeINT == IntMode.IM2) {
-            regPC = MemIoImpl.peek16((regI << 8) | 0xff); // +6 t-estados
+            regPC = MemIoImpl.intAck((regI << 8)); // +6 t-estados
         } else {
             regPC = 0x0038;
         }

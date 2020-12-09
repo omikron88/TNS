@@ -39,7 +39,10 @@ public class Tns extends Thread
     private boolean paused;
     private boolean boot;
     private boolean fdcsync;
+    private boolean runap;
     
+    private int ap;
+    private boolean mask[];
     private int pfr, pfw;
 
     public Tns() {
@@ -55,6 +58,7 @@ public class Tns extends Thread
         
         paused = true;
         
+        mask = new boolean[128];
         Reset(true);
     }
     
@@ -101,6 +105,8 @@ public class Tns extends Thread
     public final void Reset(boolean dirty) {
         boot = true;
         fdcsync = false;
+        runap = true;
+        ap = 0x01;
         pfr = pfw = 0;
         mem.reset(dirty);
         mem.bootRom(true);
@@ -136,11 +142,7 @@ public class Tns extends Thread
     }
     
     public void ms20() {        
-        if (!paused) {
-
-//            cpu.setINTLine(true);
-//            cpu.execute(clk.getTstates()+16);
-//            cpu.setINTLine(false);            
+        if (!paused) {           
             cpu.execute(clk.getTstates()+t_frame);
             grf.g0();
             scr.repaint();
@@ -165,6 +167,15 @@ public class Tns extends Thread
     @Override
     public int fetchOpcode(int address) {
         clk.addTstates(4);
+        if (runap) {
+            ap = (ap + 1) & 0xff | 0x01;
+            if ((this.inPort(ap) &0x01) !=0)  {
+                if (mask[ap>>>1]) {
+                    runap = false;
+                    cpu.setINTLine(true);
+                }
+            }            
+        }
         int opcode = mem.readByte(address) & 0xff;
 //        System.out.println(String.format("PC: %04X (%02X)", address,opcode));
         if (fdcsync==true) {
@@ -210,8 +221,19 @@ public class Tns extends Thread
     }
 
     @Override
+    public int intAck(int address) {
+        clk.addTstates(6);
+        cpu.setINTLine(false);
+        address |= (ap & 0x00fe);
+        int lsb = mem.readByte(address) & 0xff;
+        address = (address+1) & 0x7fffffff;
+        return ((mem.readByte(address) << 8) & 0xff00 | lsb);
+    }
+
+    @Override
     public int inPort(int port) {
         clk.addTstates(4);
+        int tmp = 0xff;       
         
         switch(port & 0xff) {
             case 0x2e:
@@ -233,7 +255,13 @@ public class Tns extends Thread
             default:
                 System.out.println(String.format("In: %04X (%04X)", port,cpu.getRegPC()));
         }
-        return 0xff;
+        
+        if ((port & 0x0001) != 0) {
+            tmp |= mask[ap>>>1] ? 0x08 : 0x00; 
+            runap = true; 
+        }
+
+        return tmp;
     }
 
     @Override
@@ -249,7 +277,7 @@ public class Tns extends Thread
         switch(port & 0xff) {
             case 0x2c:
                 {
-                    System.out.println(String.format("Map: %04X,%02X (%04X)", port,value,cpu.getRegPC()));
+                    System.out.println(String.format("BGD: %04X,%02X (%04X)", port,value,cpu.getRegPC()));
                     break;
                 }
             case 0x3a:
@@ -288,8 +316,8 @@ public class Tns extends Thread
     @Override
     public int atAddress(int address, int opcode) {
         System.out.println(String.format("bp: %04X,%02X", address,opcode));
-        mem.dumpRam("dump.bin", (0xc000>>>10), 63);
-        System.exit(1);
+//        mem.dumpRam("dump.bin", (0xc000>>>10), 63);
+//        System.exit(1);
         return opcode;
     }
 

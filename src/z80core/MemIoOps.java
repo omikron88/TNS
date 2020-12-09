@@ -16,6 +16,7 @@ public interface MemIoOps {
     void poke8(int address, int value);
     int peek16(int address);
     void poke16(int address, int word);
+    int intAck(int address);
 
     int inPort(int port);
     void outPort(int port, int value);
