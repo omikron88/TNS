@@ -40,6 +40,8 @@ public class FTns extends javax.swing.JFrame {
         bOpent = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
         bReset = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
+        bNmi = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JToolBar.Separator();
         bPause = new javax.swing.JToggleButton();
         jSeparator5 = new javax.swing.JToolBar.Separator();
@@ -92,6 +94,19 @@ public class FTns extends javax.swing.JFrame {
             }
         });
         ToolBar.add(bReset);
+        ToolBar.add(jSeparator2);
+
+        bNmi.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/nmi.png"))); // NOI18N
+        bNmi.setToolTipText("Nmi");
+        bNmi.setFocusable(false);
+        bNmi.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        bNmi.setPreferredSize(new java.awt.Dimension(20, 20));
+        bNmi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bNmiActionPerformed(evt);
+            }
+        });
+        ToolBar.add(bNmi);
         ToolBar.add(jSeparator4);
 
         bPause.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/pause.png"))); // NOI18N
@@ -164,6 +179,10 @@ public class FTns extends javax.swing.JFrame {
     private void bResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bResetActionPerformed
         m.Reset(false);
     }//GEN-LAST:event_bResetActionPerformed
+
+    private void bNmiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bNmiActionPerformed
+        m.Nmi();
+    }//GEN-LAST:event_bNmiActionPerformed
 
     private void bSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSettingsActionPerformed
         boolean pau = m.isPaused();
@@ -272,6 +291,7 @@ public class FTns extends javax.swing.JFrame {
     private javax.swing.JLabel Drv3;
     private javax.swing.JLabel Drv4;
     private javax.swing.JToolBar ToolBar;
+    private javax.swing.JButton bNmi;
     private javax.swing.JButton bOpent;
     private javax.swing.JToggleButton bPause;
     private javax.swing.JButton bReset;
@@ -279,6 +299,7 @@ public class FTns extends javax.swing.JFrame {
     private javax.swing.JFileChooser fc;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator10;
+    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator4;
     private javax.swing.JToolBar.Separator jSeparator5;
     private javax.swing.JToolBar.Separator jSeparator6;

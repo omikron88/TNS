@@ -13,6 +13,5 @@ public class DriveGeom {
     public int bps = 128;
     public int sectors = 26;
     public int tracks = 77;
-    public int sides = 1;
-    
+    public int sides = 1;   
 }

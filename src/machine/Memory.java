@@ -42,14 +42,7 @@ public final class Memory {
             for(int i=0; i<rampages; i++) {
                 for(int j=0; j<PAGE_SIZE; j++) {
                     Ram[i][j] = (byte) c;
-                    VRam[0][j] = (byte) c;
-                    VRam[1][j] = (byte) c;
-                    VRam[2][j] = (byte) c;
-                    VRam[3][j] = (byte) c;
-                    VRam[4][j] = (byte) c;
-                    VRam[5][j] = (byte) c;
-                    VRam[6][j] = (byte) c;
-                    VRam[7][j] = (byte) c;
+                    if (i<8) {VRam[i][j] = (byte) c;}
                     a = (a+1) & 0X7f;
                     if (a==0) { c ^= 0xff; };
                 }
@@ -69,8 +62,8 @@ public final class Memory {
                 readPages[i] = writePages[i] = Ram[i];   
             }
 
-        int a = 112;
-        for(int i=0; i<4; i++) {
+        int a = 0x0e0000 >>> PAGE_BIT;
+        for(int i=0; i<8; i++) {
                 readPages[a] = writePages[a] = VRam[i];
                 a++;
             }
@@ -79,7 +72,7 @@ public final class Memory {
     public void dumpRam(String fname, int first, int last) {
         RandomAccessFile f;
         try {
-            f = new RandomAccessFile(fname, "w");
+            f = new RandomAccessFile(fname, "rw");
             for(int i=first; i<(last+1); i++) {
                 f.write(Ram[i]);
             }
@@ -91,7 +84,7 @@ public final class Memory {
     }
     
     public byte readChar(int address) {
-        return Char[0][address];
+        return Char[address >>> PAGE_BIT][address & PAGE_MASK];
     }
 
     public byte readVram(int address) {
@@ -235,6 +228,3 @@ public final class Memory {
     }
 
 }
-
-
-

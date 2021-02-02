@@ -32,6 +32,7 @@ public class Wd {
     private int cnt, timeout;
     private int mode, r3212;
     private long position;
+    private boolean ir;
     private byte bb[];
     private RingBuffer buff;
     
@@ -85,6 +86,11 @@ public class Wd {
         cnt = 0;
         timeout = 0;
         stat = IDLE;
+        ir = false;
+    }
+    
+    public int isInt() {
+        return ir ? 1 : 0;
     }
     
     public boolean insertImage(int index, String fname) {
@@ -136,13 +142,14 @@ public class Wd {
     public void setCmd(int val) {
         ctl = val;
         System.out.println(String.format("Cmd: %02X (%04X)", val,m.getPC()));
+        ir = false;
         switch(ctl&0xf0) {
             case 0x00: {
                 doSeek(0); 
                 break;
             }
             case 0x10: {
-                doSeek(getDat()); 
+                doSeek(dat); 
                 break;
             }
             case 0x80:
@@ -173,7 +180,6 @@ public class Wd {
         System.out.println(String.format("ODat: %02X", val));
         cnt++;
         state('W');
-        
     }
 
     public int getDat() {
@@ -185,19 +191,21 @@ public class Wd {
     }
 
     public void setBuf(int val) {
-        System.out.println(String.format("OB: %03X", buff.pos()));
-        if ((mode&0x02)!=0) {        
+//        System.out.println(String.format("OB: %03X", buff.pos()));
+        if ((mode&0x08)!=0) {        
             buff.put((byte)(val & 0xff));
         }
     }
 
     public int getBuf() {
-//        System.out.println(String.format("IB: %03X", buff.pos()));
-        if ((mode&0x02)!=0) {
+        if ((mode&0x08)!=0) {
+            int pos = buff.pos();
             int tmp = buff.get() & 0xff;
+            System.out.println(String.format("IB: %02X (%03X)", tmp,pos));
             return tmp;
         }
         else {
+            System.out.println(String.format("IB: %02X (%02X)", dat,cnt));
             return dat;
         }
     }
@@ -260,7 +268,6 @@ public class Wd {
         position = trk * (d.sectors * d.bps);
         position += (sec-1) * d.bps;
         System.out.println(String.format("seek: T%02X S%02X - %08X", trk,sec,position));
-
         return true;
     }
 
@@ -291,11 +298,13 @@ public class Wd {
                     else {
                         stat = IDLE;
                         res = 0;
+                        ir = true;
                     }
                 }
                 else {
                     stat = IDLE;
                     res = 0;
+                    ir = true;
                 }
             }        
         }
@@ -304,6 +313,7 @@ public class Wd {
             if (cnt==6) {
                 stat = IDLE;
                 res = 0;
+                ir = true;
             }        
         }
         
@@ -312,6 +322,7 @@ public class Wd {
             if (cnt==8) {
                 stat = IDLE;
                 res = 0;
+                ir = true;
             }        
         }    
 
@@ -340,6 +351,7 @@ public class Wd {
             }
             else {
                 res = R_NFND;
+                ir = true;
             }
         }
     }
@@ -367,6 +379,7 @@ public class Wd {
             }
             else {
                 res = R_NFND;
+                ir = true;
             }
         }
     }
@@ -374,6 +387,7 @@ public class Wd {
     private void doSeek(int track) {
         if (open==0) {
             res = R_NRDY;
+            ir = true;
         }
         else {
             res = R_BUSY;
@@ -386,6 +400,7 @@ public class Wd {
     private void doInt() {
         res = 0;
         stat = IDLE;
+        ir = false;
     }
 
 }
