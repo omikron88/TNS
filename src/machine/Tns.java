@@ -73,6 +73,10 @@ public class Tns extends Thread
     public Config getConfig() {
         return cfg;
     }
+    
+    public Wd getWDC() {
+        return wdc;
+    }
         
     public void setScreen(Screen screen) {
         scr = screen;
