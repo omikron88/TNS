@@ -73,11 +73,7 @@ public class Tns extends Thread
     public Config getConfig() {
         return cfg;
     }
-    
-    public Wd getWDC() {
-        return wdc;
-    }
-    
+        
     public void setScreen(Screen screen) {
         scr = screen;
     }
@@ -114,7 +110,7 @@ public class Tns extends Thread
         boot = true;
         fdcsync = false;
         runap = false;
-        ap = 0x01;
+        ap = 0x00;
         pfr = pfw = 0;
         mapp = 0;
         mapa = false;
@@ -192,8 +188,8 @@ public class Tns extends Thread
         mape[1] = mape[0];
         
         if (runap) {
-            ap = (ap + 1) & 0xff | 0x01;
-            if ((this.inPort(ap) & 0x01) !=0)  {
+            ap = ((ap + 2) & 0xfe) | 1;
+            if ((this.inPort(ap) & 1) !=0 )  {
                 if (mask[ap>>>1]) {
                     runap = false;
                     cpu.setINTLine(true);
@@ -333,12 +329,15 @@ public class Tns extends Thread
             case 0x61:
                 return wdc.isInt();
             default:
-//                System.out.println(String.format("In: %04X (%04X)",port,cpu.getRegPC()));
+
         }
         
         if ((port & 0x0001) != 0) {
             tmp |= mask[ap>>>1] ? 0x08 : 0x00; 
             runap = true; 
+        }
+        else {
+            System.out.println(String.format("In: %04X (%04X)",port,cpu.getRegPC()));
         }
         return tmp;
     }
@@ -368,7 +367,7 @@ public class Tns extends Thread
                 }
             case 0x3a:
                 {
-                    System.out.println(String.format("PFL: %02X (%04X)", value,cpu.getRegPC()));
+//                    System.out.println(String.format("PFL: %02X (%04X)", value,cpu.getRegPC()));
                     pfr = (value & 0x0f) << 16;
                     pfw = (value & 0xf0) << 12;
                     break;
@@ -377,17 +376,17 @@ public class Tns extends Thread
                 {
                     if ((port&0x1000)==0) {  // bank bit
                         map[0][(port&0xe000)>>>13] = (value&0xfe) << 12;
-                        System.out.println(String.format("MAP0: %02X %02X (%04X)", port>>>13,value>>>1,cpu.getRegPC()));
+//                        System.out.println(String.format("MAP0: %02X %02X (%04X)", port>>>13,value>>>1,cpu.getRegPC()));
                     } 
                     else {
                         map[1][(port&0xe000)>>>13] = (value&0xfe) << 12;
-                        System.out.println(String.format("MAP1: %02X %02X (%04X)", port>>>13,value>>>1,cpu.getRegPC()));                        
+//                        System.out.println(String.format("MAP1: %02X %02X (%04X)", port>>>13,value>>>1,cpu.getRegPC()));                        
                     }
                     break;
                 }
             case 0x5e:
                 {
-                    System.out.println(String.format("MAAP ctrl: %04X,%02X (%04X)", port,value,cpu.getRegPC()));
+//                    System.out.println(String.format("MAP ctrl: %04X,%02X (%04X)", port,value,cpu.getRegPC()));
                     mapp = (value&1)==0 ? 0 : 1;
                     mapa = (value&2) != 0;
                     break;
@@ -409,8 +408,8 @@ public class Tns extends Thread
             case 0x6E:
                 {wdc.setMode(value); break;}
             default:
-                System.out.println(String.format("Out: %04X,%02X (%04X)", port,value,cpu.getRegPC()));
-        }
+//                System.out.println(String.format("Out: %04X,%02X (%04X)", port,value,cpu.getRegPC()));
+        }        
     }
 
     @Override

@@ -22,11 +22,12 @@ public final class Keyboard implements KeyListener {
     }
 
     public int isKey() {
-        return pressed ? 1:0;
+        int tmp = pressed ? 1 : 0;
+        pressed = false;
+        return tmp;
     }
     
     public int getKey() {
-        pressed = false;
         return key;
     }
     
@@ -49,7 +50,6 @@ public final class Keyboard implements KeyListener {
         switch(ke.getKeyCode()) {
             
         }  //switch
-        pressed = false;
     }
 
 }

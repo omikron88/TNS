@@ -90,7 +90,9 @@ public class Wd {
     }
     
     public int isInt() {
-        return ir ? 1 : 0;
+        int tmp = ir ? 1 : 0;
+        ir = false;
+        return tmp;
     }
     
     public boolean insertImage(int index, String fname) {
@@ -123,7 +125,7 @@ public class Wd {
     
     public void setTrk(int val) {
         trk = val;
-        System.out.println(String.format("Trk: %02X", val));
+//        System.out.println(String.format("Trk: %02X", val));
     }
 
     public int getTrk() {
@@ -132,7 +134,7 @@ public class Wd {
 
     public void setSec(int val) {
         sec = val;
-        System.out.println(String.format("Sec: %02X", val));
+//        System.out.println(String.format("Sec: %02X", val));
     }
 
     public int getSec() {
@@ -177,7 +179,7 @@ public class Wd {
     
     public void setDat(int val) {
         dat = val;
-        System.out.println(String.format("ODat: %02X", val));
+//        System.out.println(String.format("ODat: %02X", val));
         cnt++;
         state('W');
     }
@@ -201,24 +203,24 @@ public class Wd {
         if ((mode&0x08)!=0) {
             int pos = buff.pos();
             int tmp = buff.get() & 0xff;
-            System.out.println(String.format("IB: %02X (%03X)", tmp,pos));
+//            System.out.println(String.format("IB: %02X (%03X)", tmp,pos));
             return tmp;
         }
         else {
-            System.out.println(String.format("IB: %02X (%02X)", dat,cnt));
+//            System.out.println(String.format("IB: %02X (%02X)", dat,cnt));
             return dat;
         }
     }
 
     public void setMode(int val) {
         mode = val;
-        System.out.println(String.format("Mod: %02X (%04X)", val,m.getPC()));
+//        System.out.println(String.format("Mod: %02X (%04X)", val,m.getPC()));
         if ((mode & 0x01)!=0) { buff.reset(); } 
     }
 
     public void set3212(int val) {
         r3212 = val;
-        System.out.println(String.format("Reg: %02X (%04X)", val,m.getPC()));
+//        System.out.println(String.format("Reg: %02X (%04X)", val,m.getPC()));
         if ((r3212&0x04)==0) reset();
         switch(r3212 & 0x6a) {
             case 0x40: {selDrive(1); break;}
@@ -267,7 +269,7 @@ public class Wd {
         
         position = trk * (d.sectors * d.bps);
         position += (sec-1) * d.bps;
-        System.out.println(String.format("seek: T%02X S%02X - %08X", trk,sec,position));
+//        System.out.println(String.format("seek: T%02X S%02X - %08X", trk,sec,position));
         return true;
     }
 
