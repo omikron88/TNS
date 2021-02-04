@@ -95,6 +95,10 @@ public class Wd {
         return tmp;
     }
     
+    public DriveGeom getDriveGeometry(int index) {
+        return dg[index-1];
+    }
+
     public boolean insertImage(int index, String fname) {
         if (index==open) {
             return false;

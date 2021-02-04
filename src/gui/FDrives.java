@@ -17,6 +17,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import machine.Wd;
+import utils.DriveGeom;
 
 /**
  *
@@ -26,6 +27,10 @@ public class FDrives extends javax.swing.JDialog {
     
     private Wd wd;
     private File dir;
+    
+    private final String imageExt[] = {".img",".8sd"};
+    private final ExtendedFileFilter imageFlt = new ExtendedFileFilter
+            ("Image files",imageExt);
     
     /**
      * Creates new form FDrives
@@ -75,7 +80,7 @@ public class FDrives extends javax.swing.JDialog {
         fc.setDialogTitle(title);
         fc.resetChoosableFileFilters();
         fc.setAcceptAllFileFilterUsed(true);
-        fc.setFileFilter(new FileNameExtensionFilter("image files", "img"));
+        fc.setFileFilter(imageFlt);
         fc.setCurrentDirectory(dir);
         int val = fc.showOpenDialog(this);      
         if (val==JFileChooser.APPROVE_OPTION) {
@@ -110,9 +115,11 @@ public class FDrives extends javax.swing.JDialog {
             try {
                 fn = fc.getSelectedFile().getCanonicalPath();
                 f =  new RandomAccessFile(fn, "rw");
-                b = new byte[128*26*77];
+                DriveGeom dg = wd.getDriveGeometry(num);
+                b = new byte[dg.bps * dg.sectors];
                 Arrays.fill(b, (byte) 0xe5);
-                f.write(b);
+                int n, m = dg.sides * dg.tracks;
+                for(n=0; n<m; n++) { f.write(b); }
                 f.close();
                 wd.insertImage(num, fn);
                 t.setText(fn);
@@ -165,12 +172,12 @@ public class FDrives extends javax.swing.JDialog {
         setMaximumSize(new java.awt.Dimension(390, 353));
         setMinimumSize(new java.awt.Dimension(390, 353));
         setModal(true);
-        setName("DrivesDlg");
+        setName("DrivesDlg"); // NOI18N
         setPreferredSize(new java.awt.Dimension(390, 353));
         setResizable(false);
         getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
-        panel.setBorder(javax.swing.BorderFactory.createEtchedBorder(0));
+        panel.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
 
         bOk.setText("Ok");
         bOk.addActionListener(new java.awt.event.ActionListener() {
@@ -179,7 +186,7 @@ public class FDrives extends javax.swing.JDialog {
             }
         });
 
-        panel1.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        panel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         label1.setText("1");
 
@@ -239,7 +246,7 @@ public class FDrives extends javax.swing.JDialog {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panel2.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        panel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         label2.setText("2");
 
@@ -299,7 +306,7 @@ public class FDrives extends javax.swing.JDialog {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panel3.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        panel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         label3.setText("3");
 
@@ -359,7 +366,7 @@ public class FDrives extends javax.swing.JDialog {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panel4.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        panel4.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         label4.setText("4");
 
@@ -446,7 +453,7 @@ public class FDrives extends javax.swing.JDialog {
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelLayout.createSequentialGroup()
-                .addContainerGap(27, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(panel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
