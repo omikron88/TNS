@@ -51,8 +51,8 @@ public class Tns extends Thread
     private boolean mapa;
 
     public Tns() {
+        cfg = new Config(); cfg.LoadConfig();
         img = new BufferedImage(640, 256, BufferedImage.TYPE_INT_RGB);
-        cfg = new Config();
         mem = new Memory(cfg);
         tim = new Timer("Timer");
         clk = new Clock();
@@ -60,13 +60,13 @@ public class Tns extends Thread
         grf = new Grafik(mem, img);
         key = new Keyboard();
         wdc = new Wd(this);
-        
+
         paused = true;
         
         mask = new boolean[128];
         map  = new int[2][8];
         mape = new boolean[4];
-        
+
         Reset(true);
     }
     

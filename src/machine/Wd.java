@@ -21,6 +21,7 @@ import utils.RingBuffer;
 public class Wd {
 
     private Tns m;
+    private Config cfg;
     
     private String image[];
     private DriveGeom dg[];
@@ -51,6 +52,7 @@ public class Wd {
 
     Wd(Tns machine) {
         m = machine;
+        cfg = m.getConfig();
                 
         image = new String[4];
         dg = new DriveGeom[4];
@@ -61,10 +63,10 @@ public class Wd {
         bb = new byte[1024];
         buff = new RingBuffer(1024);
         
-        image[0] = "091.img";
-        image[1] = "092.img";
-        image[2] = "";
-        image[3] = "";
+        image[0] = cfg.drive1;
+        image[1] = cfg.drive2;
+        image[2] = cfg.drive3;
+        image[3] = cfg.drive4;
         
         r3212 = 0;
         mode = 0;

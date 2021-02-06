@@ -7,6 +7,7 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import machine.Config;
 import machine.Tns;
 
 /**
@@ -194,6 +195,9 @@ public class FTns extends javax.swing.JFrame {
             m.Reset(false);
         }
         set.dispose();
+        
+        m.getConfig().SaveConfig();
+        
         if (!pau) m.startEmulation();
     }//GEN-LAST:event_bSettingsActionPerformed
 
@@ -204,6 +208,13 @@ public class FTns extends javax.swing.JFrame {
         FDrives drv = new FDrives();
         drv.showDialog(m.getWDC());
         drv.dispose();
+        
+        Config cf = m.getConfig();
+        cf.drive1 = m.getWDC().getImage(1);
+        cf.drive2 = m.getWDC().getImage(2);
+        cf.drive3 = m.getWDC().getImage(3);
+        cf.drive4 = m.getWDC().getImage(4);
+        cf.SaveConfig();
         
         if (!pau) m.startEmulation();
     }//GEN-LAST:event_bOpentActionPerformed

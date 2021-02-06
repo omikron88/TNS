@@ -14,9 +14,9 @@ public final class Memory {
     public final int PAGE_MASK = PAGE_SIZE - 1;
     public final byte PAGE_BIT = 13;
     
-    public final int rampages = 32;
+    public int rampages = 32; 
     
-    private byte[][] Ram = new byte[rampages][PAGE_SIZE];
+    private byte[][] Ram = new byte[128][PAGE_SIZE];
     private byte[][] VRam = new byte[8][PAGE_SIZE];
     private byte[][] Boot = new byte[1][PAGE_SIZE];
     private byte[][] Char = new byte[1][PAGE_SIZE];
@@ -36,10 +36,13 @@ public final class Memory {
     }
 
     public void reset(boolean dirty) {
+        
+        rampages = cf.ramsize >>> 3;
+        
         if (dirty) {
             char c = 0;
             int a = 0;
-            for(int i=0; i<rampages; i++) {
+            for(int i=0; i<128; i++) {
                 for(int j=0; j<PAGE_SIZE; j++) {
                     Ram[i][j] = (byte) c;
                     if (i<8) {VRam[i][j] = (byte) c;}

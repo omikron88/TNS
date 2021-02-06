@@ -32,6 +32,14 @@ public class FSettings extends javax.swing.JDialog {
     public void showDialog(Config conf) {
         cf = conf;
         
+        switch(cf.ramsize) {
+            case 256:   { b256.setSelected(true); break; }
+            case 512:   { b512.setSelected(true); break; }
+            case 768:   { b768.setSelected(true); break; }
+            case 1024:  { b1024.setSelected(true); break; }
+            default:    { b256.setSelected(true); break; }
+        } //switch
+        
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         setLocation((screen.width-getSize().width)/2, (screen.height-getSize().height)/2);
         setModal(true);
@@ -48,7 +56,13 @@ public class FSettings extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        RamGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
+        jRamPanel = new javax.swing.JPanel();
+        b256 = new javax.swing.JRadioButton();
+        b512 = new javax.swing.JRadioButton();
+        b768 = new javax.swing.JRadioButton();
+        b1024 = new javax.swing.JRadioButton();
         bOk = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -57,12 +71,73 @@ public class FSettings extends javax.swing.JDialog {
         setMaximumSize(new java.awt.Dimension(414, 335));
         setMinimumSize(new java.awt.Dimension(414, 335));
         setModal(true);
-        setName("SettingsDlg");
+        setName("SettingsDlg"); // NOI18N
         setPreferredSize(new java.awt.Dimension(414, 335));
         setResizable(false);
         getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder(0));
+        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
+
+        jRamPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Ram size"));
+
+        RamGroup.add(b256);
+        b256.setText("256KB");
+        b256.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b256ActionPerformed(evt);
+            }
+        });
+
+        RamGroup.add(b512);
+        b512.setText("512KB");
+        b512.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b512ActionPerformed(evt);
+            }
+        });
+
+        RamGroup.add(b768);
+        b768.setText("768KB");
+        b768.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b768ActionPerformed(evt);
+            }
+        });
+
+        RamGroup.add(b1024);
+        b1024.setText("1024KB");
+        b1024.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b1024ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jRamPanelLayout = new javax.swing.GroupLayout(jRamPanel);
+        jRamPanel.setLayout(jRamPanelLayout);
+        jRamPanelLayout.setHorizontalGroup(
+            jRamPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jRamPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(b256)
+                .addGap(18, 18, 18)
+                .addComponent(b512)
+                .addGap(18, 18, 18)
+                .addComponent(b768)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addComponent(b1024)
+                .addGap(21, 21, 21))
+        );
+        jRamPanelLayout.setVerticalGroup(
+            jRamPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jRamPanelLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jRamPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(b256)
+                    .addComponent(b512)
+                    .addComponent(b768)
+                    .addComponent(b1024))
+                .addContainerGap(24, Short.MAX_VALUE))
+        );
 
         bOk.setText("Ok");
         bOk.addActionListener(new java.awt.event.ActionListener() {
@@ -78,12 +153,18 @@ public class FSettings extends javax.swing.JDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(179, 179, 179)
                 .addComponent(bOk)
-                .addContainerGap(192, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jRamPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(283, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(jRamPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 183, Short.MAX_VALUE)
                 .addComponent(bOk)
                 .addContainerGap())
         );
@@ -95,9 +176,35 @@ public class FSettings extends javax.swing.JDialog {
         setVisible(false);
         setModal(false);
     }//GEN-LAST:event_bOkActionPerformed
+
+    private void b256ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b256ActionPerformed
+        cf.ramsize = 256;
+        ResetNeeded = true;
+    }//GEN-LAST:event_b256ActionPerformed
+
+    private void b512ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b512ActionPerformed
+        cf.ramsize = 512;
+        ResetNeeded = true;
+    }//GEN-LAST:event_b512ActionPerformed
+
+    private void b768ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b768ActionPerformed
+        cf.ramsize = 768;
+        ResetNeeded = true;
+    }//GEN-LAST:event_b768ActionPerformed
+
+    private void b1024ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b1024ActionPerformed
+        cf.ramsize = 1024;
+        ResetNeeded = true;
+    }//GEN-LAST:event_b1024ActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup RamGroup;
+    private javax.swing.JRadioButton b1024;
+    private javax.swing.JRadioButton b256;
+    private javax.swing.JRadioButton b512;
+    private javax.swing.JRadioButton b768;
     private javax.swing.JButton bOk;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jRamPanel;
     // End of variables declaration//GEN-END:variables
 }
