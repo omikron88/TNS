@@ -338,7 +338,6 @@ public class Tns extends Thread
         
         if ((port & 0x0001) != 0) {
             tmp |= mask[ap>>>1] ? 0x08 : 0x00; 
-            runap = true; 
         }
         else {
             System.out.println(String.format("In: %04X (%04X)",port,cpu.getRegPC()));
@@ -358,6 +357,7 @@ public class Tns extends Thread
         
         if ((port & 0x0001) != 0) {
             mask[(port&0xff)>>>1] = ((value & 1) != 0);
+            runap = true;
             System.out.println(String.format("mask: %04X,%02X (%04X)", port,value&1,cpu.getRegPC()));
         }
                 
