@@ -33,6 +33,7 @@ public class FSettings extends javax.swing.JDialog {
         cf = conf;
         
         switch(cf.ramsize) {
+            case 64:    { b64.setSelected(true); break; }
             case 256:   { b256.setSelected(true); break; }
             case 512:   { b512.setSelected(true); break; }
             case 768:   { b768.setSelected(true); break; }
@@ -59,6 +60,7 @@ public class FSettings extends javax.swing.JDialog {
         RamGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jRamPanel = new javax.swing.JPanel();
+        b64 = new javax.swing.JRadioButton();
         b256 = new javax.swing.JRadioButton();
         b512 = new javax.swing.JRadioButton();
         b768 = new javax.swing.JRadioButton();
@@ -79,6 +81,14 @@ public class FSettings extends javax.swing.JDialog {
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
 
         jRamPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Ram size"));
+
+        RamGroup.add(b64);
+        b64.setText("64KB");
+        b64.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b64ActionPerformed(evt);
+            }
+        });
 
         RamGroup.add(b256);
         b256.setText("256KB");
@@ -117,15 +127,16 @@ public class FSettings extends javax.swing.JDialog {
         jRamPanelLayout.setHorizontalGroup(
             jRamPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jRamPanelLayout.createSequentialGroup()
-                .addContainerGap()
+                .addComponent(b64)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(b256)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(b512)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(b768)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(b1024)
-                .addGap(21, 21, 21))
+                .addContainerGap())
         );
         jRamPanelLayout.setVerticalGroup(
             jRamPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -135,7 +146,8 @@ public class FSettings extends javax.swing.JDialog {
                     .addComponent(b256)
                     .addComponent(b512)
                     .addComponent(b768)
-                    .addComponent(b1024))
+                    .addComponent(b1024)
+                    .addComponent(b64))
                 .addContainerGap(24, Short.MAX_VALUE))
         );
 
@@ -177,6 +189,11 @@ public class FSettings extends javax.swing.JDialog {
         setModal(false);
     }//GEN-LAST:event_bOkActionPerformed
 
+    private void b64ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b64ActionPerformed
+        cf.ramsize = 64;
+        ResetNeeded = true;
+    }//GEN-LAST:event_b64ActionPerformed
+    
     private void b256ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b256ActionPerformed
         cf.ramsize = 256;
         ResetNeeded = true;
@@ -196,12 +213,13 @@ public class FSettings extends javax.swing.JDialog {
         cf.ramsize = 1024;
         ResetNeeded = true;
     }//GEN-LAST:event_b1024ActionPerformed
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup RamGroup;
     private javax.swing.JRadioButton b1024;
     private javax.swing.JRadioButton b256;
     private javax.swing.JRadioButton b512;
+    private javax.swing.JRadioButton b64;
     private javax.swing.JRadioButton b768;
     private javax.swing.JButton bOk;
     private javax.swing.JPanel jPanel1;

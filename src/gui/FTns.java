@@ -206,7 +206,7 @@ public class FTns extends javax.swing.JFrame {
         m.stopEmulation();
         
         FDrives drv = new FDrives();
-        drv.showDialog(m.getWDC());
+        drv.showDialog(m);
         drv.dispose();
         
         Config cf = m.getConfig();

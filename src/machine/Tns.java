@@ -197,7 +197,7 @@ public class Tns extends Thread
                 if (mask[ap>>>1]) {
                     runap = false;
                     cpu.setINTLine(true);
-                    System.out.println(String.format("***int: %04X", ap));
+//                    System.out.println(String.format("***int: %04X", ap));
                 }
             }            
         }
@@ -279,7 +279,7 @@ public class Tns extends Thread
         if (mapa==false) {Arrays.fill(mape, false);}
         cpu.setINTLine(false);
         address |= (ap & 0x00fe);
-        System.out.println(String.format("###intack: %04X", address));
+//        System.out.println(String.format("###intack: %04X", address));
         int lsb = mem.readByte(address) & 0xff;
         address = (address+1) & 0xffff;
         return ((mem.readByte(address) << 8) & 0xff00 | lsb);
@@ -291,6 +291,8 @@ public class Tns extends Thread
         int tmp = 0x00;       
         
         switch(port & 0xff) {
+            case 0x2c:
+                return 0;
             case 0x2d:
                 return grf.isInt();
             case 0x2e:
@@ -333,7 +335,6 @@ public class Tns extends Thread
             case 0x61:
                 return wdc.isInt();
             default:
-
         }
         
         if ((port & 0x0001) != 0) {
@@ -358,14 +359,14 @@ public class Tns extends Thread
         if ((port & 0x0001) != 0) {
             mask[(port&0xff)>>>1] = ((value & 1) != 0);
             runap = true;
-            System.out.println(String.format("mask: %04X,%02X (%04X)", port,value&1,cpu.getRegPC()));
+//            System.out.println(String.format("mask: %04X,%02X (%04X)", port,value&1,cpu.getRegPC()));
         }
                 
         switch(port & 0xff) {
             case 0x0e: {mape[0] = !mape[0]; break;}
             case 0x2c:
                 {
-                    System.out.println(String.format("BGD: %04X,%02X (%04X)", port,value,cpu.getRegPC()));
+//                    System.out.println(String.format("BGD: %04X,%02X (%04X)", port,value,cpu.getRegPC()));
                     grf.setMode(value);
                     break;
                 }
@@ -411,8 +412,12 @@ public class Tns extends Thread
                 {fdcsync = true; break;}
             case 0x6E:
                 {wdc.setMode(value); break;}
-            default:
-//                System.out.println(String.format("Out: %04X,%02X (%04X)", port,value,cpu.getRegPC()));
+            default: 
+            {
+                if ((port & 0x0001) == 0) {
+                    System.out.println(String.format("Out: %04X,%02X (%04X)", port,value&1,cpu.getRegPC()));
+                }
+            }
         }        
     }
 

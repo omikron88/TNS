@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import machine.Tns;
 import machine.Wd;
 import utils.DriveGeom;
 
@@ -25,6 +26,7 @@ import utils.DriveGeom;
  */
 public class FDrives extends javax.swing.JDialog {
     
+    private Tns tns;
     private Wd wd;
     private File dir;
     
@@ -39,16 +41,17 @@ public class FDrives extends javax.swing.JDialog {
         initComponents();
     }
     
-    public void showDialog(Wd w) {
+    public void showDialog(Tns t) {
         
-        wd = w;
-        dir = new File(System.getProperty("user.dir"));
-        int use = w.isInUse();
+        tns = t;
+        wd = tns.getWDC();
+        dir = new File(tns.getConfig().getMyPath());
+        int use = wd.isInUse();
         
-        path1.setText(w.getImage(1));
-        path2.setText(w.getImage(2));
-        path3.setText(w.getImage(3));
-        path4.setText(w.getImage(4));
+        path1.setText(wd.getImage(1));
+        path2.setText(wd.getImage(2));
+        path3.setText(wd.getImage(3));
+        path4.setText(wd.getImage(4));
         
         path1.setEnabled(use != 1);
         open1.setEnabled(use != 1);

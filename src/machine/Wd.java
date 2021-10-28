@@ -4,6 +4,8 @@
  */
 package machine;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -49,7 +51,9 @@ public class Wd {
     private final int R_TR00 = 0x04;
     private final int R_DREQ = 0x02;
     private final int R_BUSY = 0x01;
-
+    
+    private BufferedWriter deb;
+    
     Wd(Tns machine) {
         m = machine;
         cfg = m.getConfig();
@@ -72,6 +76,12 @@ public class Wd {
         mode = 0;
         
         reset();
+
+        try {
+            deb = new BufferedWriter(new FileWriter("fdc.txt"));
+        } catch (IOException ex) {
+            Logger.getLogger(Wd.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private boolean fileExist(String s) {
@@ -276,6 +286,14 @@ public class Wd {
         position = trk * (d.sectors * d.bps);
         position += (sec-1) * d.bps;
 //        System.out.println(String.format("seek: T%02X S%02X - %08X", trk,sec,position));
+        try {
+            deb.newLine();
+            deb.write(String.format("seek: T%02X S%02X - %08X", trk,sec,position));
+            deb.newLine();
+        } catch (IOException ex) {
+            Logger.getLogger(Wd.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         return true;
     }
 
@@ -297,6 +315,7 @@ public class Wd {
                         try {
                             f.seek(position);
                             f.read(bb, 0, d.bps);
+                            debug();
                             if ((mode&0x08)!=0) { buff.put(bb, d.bps); }
                             timeout = 0;
                         } catch (IOException ex) {
@@ -346,6 +365,7 @@ public class Wd {
                 try {
                     f.seek(position);
                     f.read(bb, 0, d.bps);
+                    debug();
                     cnt = 0;
                     if ((mode&0x08)!=0) { 
                         buff.put(bb, d.bps);
@@ -409,6 +429,27 @@ public class Wd {
         res = 0;
         stat = IDLE;
         ir = false;
+    }
+
+    private void debug() {
+        int a,b,n,m;
+        a = 0;
+        for(n=0;n<16;n++) {
+            try {           
+                deb.write(String.format("%02X %02X %02X %02X %02X %02X %02X %02X  ",
+                        bb[a],bb[a+1],bb[a+2],bb[a+3],bb[a+4],bb[a+5],bb[a+6],bb[a+7]));
+                for(m=0;m<8;m++) {
+                    b = bb[a] & 0xff;
+                    a++;
+                    if (b>127) { b = b - 128; }
+                    if (b<32)  { b = (int) '.'&0xff;}
+                    deb.write(String.format("%1c", (char) b));
+                }
+                deb.newLine();
+            } catch (IOException ex) {
+                Logger.getLogger(Wd.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
 }
