@@ -348,7 +348,12 @@ public class Wd {
             cnt++;
             if (cnt==8) {
                 stat = IDLE;
-                res = 0;
+                if (trk == 0) {
+                  res = R_TR00;
+                }
+                else {
+                  res = 0;  
+                }
                 ir = true;
             }        
         }    
@@ -415,7 +420,9 @@ public class Wd {
     private void doSeek(int track) {
         if (open==0) {
             res = R_NRDY;
-            ir = true;
+            if (trk == 0) {
+                res |= R_TR00;
+            }
         }
         else {
             res = R_BUSY;
@@ -428,7 +435,7 @@ public class Wd {
     private void doInt() {
         res = 0;
         stat = IDLE;
-        ir = false;
+        ir = true;
     }
 
     private void debug() {
