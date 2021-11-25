@@ -126,12 +126,6 @@ public class Tns extends Thread
         grf.reset();
         key.reset();
         wdc.reset();
-        
-//        cpu.setBreakpoint(0x0180, true);
-        
-//        for(int n=0x0100; n<0x1000; n++) {
-//            cpu.setBreakpoint(n, true);
-//        }
     }
     
     public final void Nmi() {
@@ -215,6 +209,8 @@ public class Tns extends Thread
             opcode = 0x00;      // NOP
         }
         
+        if (address == 0xf7f8) System.out.println("INT od FDC read");
+        
         return opcode;
     }
 
@@ -292,7 +288,7 @@ public class Tns extends Thread
         
         switch(port & 0xff) {
             case 0x2c:
-                return 0;
+                return grf.getMode();
             case 0x2d:
                 return grf.isInt();
             case 0x2e:

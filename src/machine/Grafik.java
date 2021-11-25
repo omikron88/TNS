@@ -45,10 +45,13 @@ public final class Grafik {
         mode = mod;
     }
     
+    public int getMode() {
+        ir = false;         // returns nothing but resets int req
+        return 0;
+    }
+    
     public int isInt() {
-        int tmp = ir ? 1:0;
-        ir = false;
-        return tmp;
+        return ir ? 1:0;
     }
     
     public void paint() {

@@ -22,12 +22,11 @@ public final class Keyboard implements KeyListener {
     }
 
     public int isKey() {
-        int tmp = pressed ? 1 : 0;
-        pressed = false;
-        return tmp;
+        return pressed ? 1 : 0;
     }
     
     public int getKey() {
+        pressed = false;
         return key;
     }
     
