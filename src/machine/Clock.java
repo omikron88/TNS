@@ -5,7 +5,6 @@
 package machine;
 
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 
 /**
  *
@@ -13,8 +12,7 @@ import java.util.ConcurrentModificationException;
  */
 public class Clock {
     private long tstates;
-    private long frames;
-    private long timeout;
+    private int timeout;
     private final ArrayList<ClockTimeoutListener> clockListeners = new ArrayList<ClockTimeoutListener>();
 
     public Clock() {
@@ -68,12 +66,11 @@ public class Clock {
     /**
      * @param states the tstates to set
      */
-    public void setTstates(long states) {
+    public void setTstates(int states) {
         tstates = states;
-        frames = 0;
     }
 
-    public void addTstates(long states) {
+    public void addTstates(int states) {
         tstates += states;
 
         if (timeout > 0) {
@@ -86,16 +83,12 @@ public class Clock {
         }
     }
 
-    public long getFrames() {
-        return frames;
-    }
-
     public void reset() {
-        frames = tstates = 0;
+        tstates = 0;
     }
 
-    public void setTimeout(long ntstates) {
+    public void setTimeout(int ntstates) {
         timeout = ntstates > 0 ? ntstates : 1;
     }
   
-} 
+}
