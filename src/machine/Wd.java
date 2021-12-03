@@ -421,14 +421,12 @@ public class Wd implements ClockTimeoutListener {
         res = 0;
         stat = IDLE;
         ir = true;
-        if (trk == 0) {
-                res |= R_TR00;
-            }
     }
 
     @Override
     public void clockTimeout() {
         ir = true;
+        res = 0;
     }
 
 }
