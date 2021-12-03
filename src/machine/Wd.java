@@ -4,8 +4,6 @@
  */
 package machine;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -20,10 +18,11 @@ import utils.RingBuffer;
  *
  * @author user
  */
-public class Wd {
+public class Wd implements ClockTimeoutListener {
 
     private Tns m;
     private Config cfg;
+    private Clock clk;
     
     private String image[];
     private DriveGeom dg[];
@@ -52,8 +51,9 @@ public class Wd {
     private final int R_DREQ = 0x02;
     private final int R_BUSY = 0x01;
         
-    Wd(Tns machine) {
+    Wd(Tns machine, Clock ck) {
         m = machine;
+        clk = ck;
         cfg = m.getConfig();
                 
         image = new String[4];
@@ -64,6 +64,8 @@ public class Wd {
         dg[3] = new DriveGeom();
         bb = new byte[1024];
         buff = new RingBuffer(1024);
+        
+        clk.addClockTimeoutListener(this);
         
         image[0] = cfg.drive1;
         image[1] = cfg.drive2;
@@ -210,12 +212,12 @@ public class Wd {
         if ((mode&0x08)!=0) {
             int pos = buff.pos();
             int tmp = buff.get() & 0xff;
-//            System.out.println(String.format("IB: %02X (%03X)", tmp,pos));
+            System.out.println(String.format("IB: %02X (%03X)", tmp,pos));
             return tmp;
         }
         else {
 //            System.out.println(String.format("IB: %02X (%02X)", dat,cnt));
-            return dat;
+            return 0;
         }
     }
 
@@ -356,7 +358,7 @@ public class Wd {
                     if ((mode&0x08)!=0) { 
                         buff.put(bb, d.bps);
                         cnt = d.bps;
-                        ir = true;
+                        clk.setTimeout(50);
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(Wd.class.getName()).log(Level.SEVERE, null, ex);
@@ -388,7 +390,7 @@ public class Wd {
                 if ((mode&0x08)!=0) { 
                     buff.put(bb, 6);
                     cnt = 6;
-                    ir = true;
+                    clk.setTimeout(50);
                 }
                 stat = HEAD;
                 res |= R_DREQ;
@@ -418,6 +420,14 @@ public class Wd {
     private void doInt() {
         res = 0;
         stat = IDLE;
+        ir = true;
+        if (trk == 0) {
+                res |= R_TR00;
+            }
+    }
+
+    @Override
+    public void clockTimeout() {
         ir = true;
     }
 

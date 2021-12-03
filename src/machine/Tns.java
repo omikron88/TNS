@@ -59,7 +59,7 @@ public class Tns extends Thread
         cpu = new Z80(clk, this, this);
         grf = new Grafik(mem, img);
         key = new Keyboard();
-        wdc = new Wd(this);
+        wdc = new Wd(this, clk);
 
         paused = true;
         
