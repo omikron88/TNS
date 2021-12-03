@@ -224,7 +224,7 @@ public class Wd implements ClockTimeoutListener {
     public void setMode(int val) {
         mode = val;
 //        System.out.println(String.format("Mod: %02X (%04X)", val,m.getPC()));
-        if ((mode & 0x01)!=0) { buff.reset(); } 
+        if ((mode & 0x01)==0) { buff.reset(); } 
     }
 
     public void set3212(int val) {
