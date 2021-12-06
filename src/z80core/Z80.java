@@ -130,12 +130,13 @@ package z80core;
 
 import java.util.Arrays;
 import machine.Clock;
+import machine.Tns;
 
 public class Z80 {
-
-    private final Clock clock;
+    public final Clock clock;
     private final MemIoOps MemIoImpl;
     private final NotifyOps NotifyImpl;
+    public boolean bMemBP=false;
     // Código de instrucción a ejecutar
     private int opCode;
     // Subsistema de notificaciones
@@ -1278,7 +1279,7 @@ public class Z80 {
     }
 
     // Operación XOR lógica
-    private void xor(int oper8) {
+    public final void xor(int oper8) {
         regA = (regA ^ oper8) & 0xff;
         carryFlag = false;
         sz5h3pnFlags = sz53pn_addTable[regA];
@@ -1295,7 +1296,7 @@ public class Z80 {
     // es como SUB, pero solo afecta a los flags
     // Los flags SIGN y ZERO se calculan a partir del resultado
     // Los flags 3 y 5 se copian desde el operando (sigh!)
-    private void cp(int oper8) {
+    public final void cp(int oper8) {
         int res = regA - (oper8 & 0xff);
 
         carryFlag = res < 0;
@@ -1634,10 +1635,11 @@ public class Z80 {
         clock.addTstates(7);
 
         regR++;
+      
         ffIFF1 = ffIFF2 = false;
         push(regPC);  // el push ańadirá 6 t-estados (+contended si toca)
         if (modeINT == IntMode.IM2) {
-            regPC = MemIoImpl.intAck((regI << 8)); // +6 t-estados
+            regPC = MemIoImpl.peek16((regI << 8) | 0xff); // +6 t-estados
         } else {
             regPC = 0x0038;
         }
@@ -1679,20 +1681,13 @@ public class Z80 {
         Arrays.fill(breakpointAt, false);
     }
     
-
-    /* Los tEstados transcurridos se calculan teniendo en cuenta el número de
-     * ciclos de máquina reales que se ejecutan. Esa es la única forma de poder
-     * simular la contended memory del Spectrum.
-     */
-    public final void execute(long statesLimit) {
-
-        while (clock.getTstates() < statesLimit) {
+    public final void executeOne() {
 
             // Primero se comprueba NMI
             if (activeNMI) {
                 activeNMI = false;
                 nmi();
-                continue;
+                return;
             }
 
             // Ahora se comprueba si al final de la instrucción anterior se
@@ -1713,6 +1708,57 @@ public class Z80 {
 
             decodeOpcode(opCode);
 
+            // Si está pendiente la activación de la interrupciones y el
+            // código que se acaba de ejecutar no es el propio EI
+            if (pendingEI && opCode != 0xFB) {
+                pendingEI = false;
+            }
+
+            if (execDone) {
+                NotifyImpl.execDone();
+            }
+    }
+
+    /* Los tEstados transcurridos se calculan teniendo en cuenta el número de
+     * ciclos de máquina reales que se ejecutan. Esa es la única forma de poder
+     * simular la contended memory del Spectrum.
+     */
+    public final void execute(long statesLimit) {
+        bMemBP=false;
+        while (clock.getTstates() < statesLimit) {
+
+            // Primero se comprueba NMI
+            if (activeNMI) {
+                activeNMI = false;
+                nmi();
+                continue;
+            }
+
+            // Ahora se comprueba si al final de la instrucción anterior se
+            // encontró una interrupción enmascarable y, de ser así, se procesa.
+            if (activeINT) {
+                if (ffIFF1 && !pendingEI) {
+                    interruption();
+                }
+            }
+
+            regR++;
+            opCode = MemIoImpl.fetchOpcode(regPC);
+
+            if (breakpointAt[regPC]) {
+                opCode = NotifyImpl.atAddress(regPC, opCode);
+                Tns m = (Tns) NotifyImpl;
+                m.stopEmulation();
+
+                m.getDebugger().showDialog();
+                break;
+            }
+        
+            regPC = (regPC + 1) & 0xffff;
+
+            decodeOpcode(opCode);
+//pokud se objevil memory breakpoint tak vyskoc
+            if(bMemBP) break;
             // Si está pendiente la activación de la interrupciones y el
             // código que se acaba de ejecutar no es el propio EI
             if (pendingEI && opCode != 0xFB) {
@@ -6300,5 +6346,4 @@ public class Z80 {
             }
         }
     }
-
 }
