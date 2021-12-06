@@ -4,7 +4,6 @@
  */
 package machine;
 
-import gui.Debugger;
 import gui.Screen;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
@@ -33,7 +32,6 @@ public class Tns extends Thread
     private MTimer task;
     private Clock clk;
     private Z80 cpu;
-    private Debugger deb;
     private Grafik grf;
     private Wd wdc;
     
@@ -72,14 +70,6 @@ public class Tns extends Thread
         Reset(true);
     }
     
-    public void setDebugger(Debugger indeb) {
-        deb = indeb;
-    }
-    
-    public Debugger getDebugger() {
-        return deb;
-    }
-    
     public Config getConfig() {
         return cfg;
     }
@@ -87,19 +77,7 @@ public class Tns extends Thread
     public Wd getWDC() {
         return wdc;
     }
-    
-    public Z80 getCPU() {
-        return cpu;
-    }
-    
-    public Memory getMemory() {
-        return mem;
-    }
-    
-    public Clock getClock() {
-        return clk;
-    }
-    
+        
     public void setScreen(Screen screen) {
         scr = screen;
     }
@@ -177,13 +155,6 @@ public class Tns extends Thread
         return paused;
     }
     
-    public void repaint() {
-        if (grf!=null) {
-            grf.paint();
-            scr.repaint();
-        }
-    }
-    
     public void ms20() {        
         if (!paused) {           
             cpu.execute(clk.getTstates()+t_frame);
@@ -237,6 +208,8 @@ public class Tns extends Thread
             fdcsync = false;
             opcode = 0x00;      // NOP
         }
+        
+        if (address == 0xf7f8) System.out.println("INT od FDC read");
         
         return opcode;
     }
@@ -455,7 +428,7 @@ public class Tns extends Thread
         System.out.println(String.format("AF:%04X BC:%04X DE:%04X HL:%04X",
                 cpu.getRegAF(),cpu.getRegBC(),cpu.getRegDE(),cpu.getRegHL()));
         
-//        mem.dumpRam("dump.bin", 0, 7);
+        mem.dumpRam("dump.bin", 0, 7);
 //        System.exit(0);
         return opcode;
     }

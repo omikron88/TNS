@@ -27,21 +27,6 @@ public class Config {
     public String drive2 = "";   //Drive 2 image
     public String drive3 = "";   //Drive 3 image
     public String drive4 = "";   //Drive 4 image
-    //ulozene udaje pro debugger
-    public boolean bBP1=false;
-    public int nBP1Address=0;
-    public boolean bBP2=false;
-    public int nBP2Address=0;
-    public boolean bBP3=false;
-    public int nBP3Address=0;
-    public boolean bBP4=false;
-    public int nBP4Address=0;
-    public boolean bBP5=false;
-    public int nBP5Address=0;
-    public boolean bBP6=false;
-    public int nBP6Address=0;
-    public int nMemAddress=0;
-    public boolean bShowCode=false;
 
     public String getMyPath() {
         String retVal = "";
@@ -60,21 +45,7 @@ public class Config {
         prop.setProperty("DRIVE3", drive3);
         prop.setProperty("DRIVE4", drive4);
         prop.setProperty("RAMSIZE", String.valueOf(ramsize));
-        prop.setProperty("BP1CHCK", String.valueOf(bBP1));
-        prop.setProperty("BP1ADDRESS", String.valueOf(nBP1Address));
-        prop.setProperty("BP2CHCK", String.valueOf(bBP2));
-        prop.setProperty("BP2ADDRESS", String.valueOf(nBP2Address));
-        prop.setProperty("BP3CHCK", String.valueOf(bBP3));
-        prop.setProperty("BP3ADDRESS", String.valueOf(nBP3Address));
-        prop.setProperty("BP4CHCK", String.valueOf(bBP4));
-        prop.setProperty("BP4ADDRESS", String.valueOf(nBP4Address));
-        prop.setProperty("BP5CHCK", String.valueOf(bBP5));
-        prop.setProperty("BP5ADDRESS", String.valueOf(nBP5Address));   
-        prop.setProperty("BP6CHCK", String.valueOf(bBP6));
-        prop.setProperty("BP6ADDRESS", String.valueOf(nBP6Address));  
-        prop.setProperty("MEMADDRESS", String.valueOf(nMemAddress)); 
-        prop.setProperty("BSHOWCODE", String.valueOf(bShowCode));     
-        
+     
         String fileName = getMyPath() + filename;
         OutputStream os;
         try {
@@ -131,19 +102,6 @@ public class Config {
         drive3 = prop.getProperty("DRIVE3");
         drive4 = prop.getProperty("DRIVE4");
         ramsize = parseIntSafe(prop.getProperty("RAMSIZE"),256);
-        bBP1=parseBooleanSafe(prop.getProperty("BP1CHCK"),false);
-        nBP1Address=parseIntSafe(prop.getProperty("BP1ADDRESS"),0);
-        bBP2=parseBooleanSafe(prop.getProperty("BP2CHCK"),false);
-        nBP2Address=parseIntSafe(prop.getProperty("BP2ADDRESS"),0);
-        bBP3=parseBooleanSafe(prop.getProperty("BP3CHCK"),false);
-        nBP3Address=parseIntSafe(prop.getProperty("BP3ADDRESS"),0);
-        bBP4=parseBooleanSafe(prop.getProperty("BP4CHCK"),false);
-        nBP4Address=parseIntSafe(prop.getProperty("BP4ADDRESS"),0);
-        bBP5=parseBooleanSafe(prop.getProperty("BP5CHCK"),false);
-        nBP5Address=parseIntSafe(prop.getProperty("BP5ADDRESS"),0);
-        bBP6=parseBooleanSafe(prop.getProperty("BP6CHCK"),false);
-        nBP6Address=parseIntSafe(prop.getProperty("BP6ADDRESS"),0);
-        nMemAddress=parseIntSafe(prop.getProperty("MEMADDRESS"),0);
-        bShowCode=parseBooleanSafe(prop.getProperty("BSHOWCODE"),false);    
+    
     }
 }

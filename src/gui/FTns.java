@@ -18,8 +18,7 @@ public class FTns extends javax.swing.JFrame {
     
     private Tns m;
     private Screen scr;
-    private Debugger dbg;
-    
+        
     /**
      * Creates new form JOndra
      */
@@ -49,8 +48,6 @@ public class FTns extends javax.swing.JFrame {
         jSeparator5 = new javax.swing.JToolBar.Separator();
         bSettings = new javax.swing.JButton();
         jSeparator6 = new javax.swing.JToolBar.Separator();
-        bDebug = new javax.swing.JButton();
-        jSeparator11 = new javax.swing.JToolBar.Separator();
         Drv1 = new javax.swing.JLabel();
         jSeparator7 = new javax.swing.JToolBar.Separator();
         Drv2 = new javax.swing.JLabel();
@@ -62,6 +59,7 @@ public class FTns extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("TNS GC");
+        setName("frame1");
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -141,20 +139,6 @@ public class FTns extends javax.swing.JFrame {
         });
         ToolBar.add(bSettings);
         ToolBar.add(jSeparator6);
-
-        bDebug.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/debugger.png"))); // NOI18N
-        bDebug.setToolTipText("Debugger");
-        bDebug.setFocusable(false);
-        bDebug.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        bDebug.setPreferredSize(new java.awt.Dimension(20, 20));
-        bDebug.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        bDebug.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bDebugActionPerformed(evt);
-            }
-        });
-        ToolBar.add(bDebug);
-        ToolBar.add(jSeparator11);
 
         Drv1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Drv1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/yellow.png"))); // NOI18N
@@ -248,23 +232,13 @@ public class FTns extends javax.swing.JFrame {
         
     }//GEN-LAST:event_formWindowClosing
 
-    private void bDebugActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDebugActionPerformed
-        boolean pau = m.isPaused();
-    
-        m.stopEmulation();
-        dbg.showDialog();
-        dbg.setAlwaysOnTop(true);
-        
-        if (!pau) m.startEmulation();
-    }//GEN-LAST:event_bDebugActionPerformed
-
     private void initEmulator() {
         m = new Tns();
         scr = new Screen();
         
         m.setScreen(scr);
         scr.setImage(m.getImage());
-        
+
         getContentPane().add(scr, BorderLayout.CENTER);
         pack();
         
@@ -277,9 +251,6 @@ public class FTns extends javax.swing.JFrame {
         setLocation((screen.width-getSize().width)/2, (screen.height-getSize().height)/2);
         setFocusTraversalKeysEnabled(false);
         addKeyListener(m.getKeyboard());
-        
-        dbg = new Debugger(m);
-        
         m.start();
     }
 
@@ -331,7 +302,6 @@ public class FTns extends javax.swing.JFrame {
     private javax.swing.JLabel Drv3;
     private javax.swing.JLabel Drv4;
     private javax.swing.JToolBar ToolBar;
-    private javax.swing.JButton bDebug;
     private javax.swing.JButton bNmi;
     private javax.swing.JButton bOpent;
     private javax.swing.JToggleButton bPause;
@@ -340,7 +310,6 @@ public class FTns extends javax.swing.JFrame {
     private javax.swing.JFileChooser fc;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator10;
-    private javax.swing.JToolBar.Separator jSeparator11;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator4;
     private javax.swing.JToolBar.Separator jSeparator5;
