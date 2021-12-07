@@ -209,8 +209,6 @@ public class Tns extends Thread
             opcode = 0x00;      // NOP
         }
         
-        if (address == 0xf7f8) System.out.println("INT od FDC read");
-        
         return opcode;
     }
 
@@ -330,7 +328,6 @@ public class Tns extends Thread
                 return wdc.getBuf();
             case 0x61:
                 return wdc.isInt();
-            default:
         }
         
         if ((port & 0x0001) != 0) {
@@ -352,9 +349,10 @@ public class Tns extends Thread
             mem.bootRom(boot);
         }
         
+        runap = true;
+        
         if ((port & 0x0001) != 0) {
             mask[(port&0xff)>>>1] = ((value & 1) != 0);
-            runap = true;
 //            System.out.println(String.format("mask: %04X,%02X (%04X)", port,value&1,cpu.getRegPC()));
         }
                 
@@ -412,7 +410,7 @@ public class Tns extends Thread
             {
                 if ((port & 0x0001) == 0) {
                     System.out.println(String.format("Out: %04X,%02X (%04X)", port,value&1,cpu.getRegPC()));
-                }
+                }                
             }
         }        
     }

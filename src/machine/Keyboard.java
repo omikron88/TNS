@@ -4,7 +4,7 @@
  */
 package machine;
 
-import java.awt.event.KeyEvent;
+import java.awt.event.KeyEvent;;
 import java.awt.event.KeyListener;
 
 /**
@@ -13,7 +13,7 @@ import java.awt.event.KeyListener;
  */
 public final class Keyboard implements KeyListener {
     
-    private char key;
+    private int key;
     private boolean pressed;
     
     public void reset() {
@@ -27,6 +27,7 @@ public final class Keyboard implements KeyListener {
     
     public int getKey() {
         pressed = false;
+        System.out.println(String.format("key: %04X", key));
         return key;
     }
     
@@ -37,9 +38,11 @@ public final class Keyboard implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent ke) {
-        switch(ke.getKeyCode()) {
-            
-            default: key = ke.getKeyChar();
+        switch(ke.getKeyCode()) {        
+            case KeyEvent.VK_ENTER:
+                key = 0x0d;
+                break;
+            default: key = (int) ke.getKeyChar();
         }  // switch
         pressed = true;
     }

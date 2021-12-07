@@ -151,7 +151,7 @@ public class Wd implements ClockTimeoutListener {
 
     public void setCmd(int val) {
         ctl = val;
-        System.out.println(String.format("Cmd: %02X (%04X)", val,m.getPC()));
+//        System.out.println(String.format("Cmd: %02X (%04X)", val,m.getPC()));
         ir = false;
         switch(ctl&0xf0) {
             case 0x00: {
@@ -182,7 +182,7 @@ public class Wd implements ClockTimeoutListener {
     public int getRes() {
         ir = false;
         state('S');
-        System.out.println(String.format("Res: %02X (%04X)", res,m.getPC()));
+//        System.out.println(String.format("Res: %02X (%04X)", res,m.getPC()));
         return res;
     }
     
@@ -212,7 +212,7 @@ public class Wd implements ClockTimeoutListener {
         if ((mode&0x08)!=0) {
             int pos = buff.pos();
             int tmp = buff.get() & 0xff;
-            System.out.println(String.format("IB: %02X (%03X)", tmp,pos));
+//            System.out.println(String.format("IB: %02X (%03X)", tmp,pos));
             return tmp;
         }
         else {
@@ -410,6 +410,9 @@ public class Wd implements ClockTimeoutListener {
             }
         }
         else {
+            if ((mode&0x08)!=0) { 
+                clk.setTimeout(50);
+            }
             res = R_BUSY;
             stat = SEEK;
             cnt = 0;
@@ -425,8 +428,14 @@ public class Wd implements ClockTimeoutListener {
 
     @Override
     public void clockTimeout() {
+        if ((stat==SEEK) && (trk==0)) {
+            res = R_TR00;
+        }
+        else {
+            res = 0;
+        }
         ir = true;
-        res = 0;
+        stat = IDLE;
     }
 
 }
