@@ -177,13 +177,15 @@ public class Tns extends Thread
             }
         }        
     }    
-            
-    @Override
-    public int fetchOpcode(int address) {
-        clk.addTstates(4);
+    
+    private void delayMAP() {
         mape[3] = mape[2];  //mapping enable/disable is 2 M1 cycles delayed
         mape[2] = mape[1];
         mape[1] = mape[0];
+    }
+    @Override
+    public int fetchOpcode(int address) {
+        clk.addTstates(4);
         
         if (runap) {
             ap = ((ap + 2) & 0xfe) | 1;
@@ -208,7 +210,8 @@ public class Tns extends Thread
             fdcsync = false;
             opcode = 0x00;      // NOP
         }
-        
+
+        delayMAP();
         return opcode;
     }
 
@@ -229,6 +232,8 @@ public class Tns extends Thread
 
         int value = mem.readByte(addr) & 0xff;
 //        System.out.println(String.format("Peek: %04X,%02X (%04X)", address,value,cpu.getRegPC()));            
+        
+        delayMAP();
         return value;
     }
 
@@ -249,6 +254,7 @@ public class Tns extends Thread
         }
 
         mem.writeByte(addr, (byte) value);
+        delayMAP();
     }
 
     @Override
