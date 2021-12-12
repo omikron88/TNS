@@ -98,12 +98,46 @@ public final class Grafik {
         }
     }
 
-    private void g1() {
+private void g1() {
+         int c,d,ad,bd,adr;
+         int ink, pap;
         
-    }
+         adr = ((mode&0x08)!=0) ? 0x0000 : 0x8000;
+         for (int y=0; y<256; y++) {
+            d = y + ofsy;
+            for (int x=0; x<64; x++) {
+                ad = m.readVram(adr++) & 0xff;
+                bd = (m.readVram(adr++) & 0xff);
+                ink = pal[(ad >> 4)& 0x0f];
+                pap = pal[ad & 0x0f];
+                c = x * 8 + ofsx;
+                i.setRGB(c++, d, (bd & 0x80) == 0 ? pap : ink);
+                i.setRGB(c++, d, (bd & 0x40) == 0 ? pap : ink);
+                i.setRGB(c++, d, (bd & 0x20) == 0 ? pap : ink);
+                i.setRGB(c++, d, (bd & 0x10) == 0 ? pap : ink);
+                i.setRGB(c++, d, (bd & 0x08) == 0 ? pap : ink);
+                i.setRGB(c++, d, (bd & 0x04) == 0 ? pap : ink);
+                i.setRGB(c++, d, (bd & 0x02) == 0 ? pap : ink);
+                i.setRGB(c++, d, (bd & 0x01) == 0 ? pap : ink);
+            }       
+         }
+        }
 
-    private void g2() {
-        
-    }
+private void g2() {
+         int c,d,ad,bd,adr;
+
+         adr = ((mode&0x08)!=0) ? 0x0000 : 0x8000;
+         for (int y=0; y<256; y++) {
+            d = y + ofsy;
+            for (int x=0; x<128; x++) {
+                ad = m.readVram(adr++) & 0xff;
+                bd = pal[ad & 0x0f];
+                ad = pal[(ad >> 4)& 0x0f];
+                c = x * 4 + ofsx;
+                i.setRGB(c++, d, ad);i.setRGB(c++, d, ad);
+                i.setRGB(c++, d, bd);i.setRGB(c++, d, bd);
+            }       
+         }
+        }
 
 }

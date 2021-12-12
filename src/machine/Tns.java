@@ -49,6 +49,8 @@ public class Tns extends Thread
     private int mapp;
     private boolean mape[];
     private boolean mapa;
+    private boolean pflp; // pfL src-dst page flip flop
+    private boolean pfle; // pfl enabled
 
     public Tns() {
         cfg = new Config(); cfg.LoadConfig();
@@ -66,6 +68,7 @@ public class Tns extends Thread
         mask = new boolean[128];
         map  = new int[2][8];
         mape = new boolean[4];
+        pflp = pfle = false;
 
         Reset(true);
     }
@@ -182,16 +185,19 @@ public class Tns extends Thread
         mape[3] = mape[2];  //mapping enable/disable is 2 M1 cycles delayed
         mape[2] = mape[1];
         mape[1] = mape[0];
+        pflp = !pflp;       //switch pfl source dest page
     }
+    
     @Override
     public int fetchOpcode(int address) {
         clk.addTstates(4);
         
         if (runap) {
             ap = ((ap + 2) & 0xfe) | 1;
-            if ((this.inPort(ap) & 1) !=0 )  {
+            if ((testINT(ap) & 1) !=0 )  {
                 if (mask[ap>>>1]) {
                     runap = false;
+                    pfle = false;
                     cpu.setINTLine(true);
 //                    System.out.println(String.format("***int: %04X", ap));
                 }
@@ -220,14 +226,14 @@ public class Tns extends Thread
         clk.addTstates(3);
         
         int addr = address;
-        if (pfr==0) {
+        if (!pfle) {
             if (mape[3]) {
                 addr &= 0x1fff;     //8K boundary 
                 addr |= map[mapp][address>>>13];
             }   
         }
         else {
-            addr |= pfr;
+            if (!pflp) addr |= pfw; else addr |= pfr;
         }
 
         int value = mem.readByte(addr) & 0xff;
@@ -243,14 +249,14 @@ public class Tns extends Thread
         clk.addTstates(3);
         
         int addr = address;
-        if (pfw==0) {
+        if (!pfle) {
             if (mape[3]) {
                 addr &= 0x1fff;     //8K boundary 
                 addr |= map[mapp][address>>>13];
             }   
         }
         else {
-            addr |= pfw;
+            if (!pflp) addr |= pfw; else addr |= pfr;
         }
 
         mem.writeByte(addr, (byte) value);
@@ -262,6 +268,7 @@ public class Tns extends Thread
         clk.addTstates(6);
         int lsb = mem.readByte(address) & 0xff;
         address = (address+1) & 0xffff;
+        delayMAP(); delayMAP();
         return ((mem.readByte(address) << 8) & 0xff00 | lsb);
     }
 
@@ -271,12 +278,14 @@ public class Tns extends Thread
         mem.writeByte(address, (byte) word);
         address = (address+1) & 0xffff;
         mem.writeByte(address, (byte) (word >>> 8));
+        delayMAP(); delayMAP();
     }
 
     @Override
     public int intAck(int address) {
         clk.addTstates(6);
         if (mapa==false) {Arrays.fill(mape, false);}
+        pfle = false;
         cpu.setINTLine(false);
         address |= (ap & 0x00fe);
 //        System.out.println(String.format("###intack: %04X", address));
@@ -284,11 +293,26 @@ public class Tns extends Thread
         address = (address+1) & 0xffff;
         return ((mem.readByte(address) << 8) & 0xff00 | lsb);
     }
-
+ 
+    private int testINT(int port) {
+        switch(port & 0xff) {
+            case 0x2d:
+                return grf.isInt();
+            case 0x2f:
+                return key.isKey();
+            case 0x61:
+                return wdc.isInt();
+        }    
+        return 0;
+    }
+    
     @Override
     public int inPort(int port) {
         clk.addTstates(4);
         int tmp = 0x00;       
+        
+        pfle = false;  // pfl is turned off by any IN
+        delayMAP();
         
         switch(port & 0xff) {
             case 0x2c:
@@ -300,7 +324,7 @@ public class Tns extends Thread
             case 0x2f:
                 return key.isKey();
             case 0x3a:
-                {pfr = pfw = 0; return 0;}
+                return 0;  // dummy - pfl is turned off by any IN
             case 0x5c:
                 {
                     int val;
@@ -375,6 +399,8 @@ public class Tns extends Thread
 //                    System.out.println(String.format("PFL: %02X (%04X)", value,cpu.getRegPC()));
                     pfr = (value & 0x0f) << 16;
                     pfw = (value & 0xf0) << 12;
+                    pflp = false;
+                    pfle = true;
                     break;
                 }
             case 0x5c:
@@ -418,7 +444,9 @@ public class Tns extends Thread
                     System.out.println(String.format("Out: %04X,%02X (%04X)", port,value&1,cpu.getRegPC()));
                 }                
             }
-        }        
+        }
+        
+        delayMAP();        
     }
 
     @Override
