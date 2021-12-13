@@ -47,10 +47,10 @@ public class Tns extends Thread
     private int pfr, pfw;
     private int map[][];
     private int mapp;
-    private boolean mape[];
-    private boolean mapa;
+    private boolean mape[]; // map enabled
+    private boolean pfle[]; // pfl enabled
+    private boolean mapa;  // false=map disabled during Int
     private boolean pflp; // pfL src-dst page flip flop
-    private boolean pfle; // pfl enabled
 
     public Tns() {
         cfg = new Config(); cfg.LoadConfig();
@@ -68,7 +68,7 @@ public class Tns extends Thread
         mask = new boolean[128];
         map  = new int[2][8];
         mape = new boolean[4];
-        pflp = pfle = false;
+        pfle = new boolean[4];
 
         Reset(true);
     }
@@ -122,6 +122,7 @@ public class Tns extends Thread
         mapp = 0;
         mapa = false;
         Arrays.fill(mape, false);
+        Arrays.fill(pfle, false);
         mem.reset(dirty);
         mem.bootRom(true);
         clk.reset();
@@ -185,6 +186,11 @@ public class Tns extends Thread
         mape[3] = mape[2];  //mapping enable/disable is 2 M1 cycles delayed
         mape[2] = mape[1];
         mape[1] = mape[0];
+        
+        pfle[3] = pfle[2];  //pfl enable is 2 M1 cycles delayed
+        pfle[2] = pfle[1];
+        pfle[1] = pfle[0];
+        
         pflp = !pflp;       //switch pfl source dest page
     }
     
@@ -197,7 +203,6 @@ public class Tns extends Thread
             if ((testINT(ap) & 1) !=0 )  {
                 if (mask[ap>>>1]) {
                     runap = false;
-                    pfle = false;
                     cpu.setINTLine(true);
 //                    System.out.println(String.format("***int: %04X", ap));
                 }
@@ -226,7 +231,7 @@ public class Tns extends Thread
         clk.addTstates(3);
         
         int addr = address;
-        if (!pfle) {
+        if (!pfle[3]) {
             if (mape[3]) {
                 addr &= 0x1fff;     //8K boundary 
                 addr |= map[mapp][address>>>13];
@@ -249,7 +254,7 @@ public class Tns extends Thread
         clk.addTstates(3);
         
         int addr = address;
-        if (!pfle) {
+        if (!pfle[3]) {
             if (mape[3]) {
                 addr &= 0x1fff;     //8K boundary 
                 addr |= map[mapp][address>>>13];
@@ -265,27 +270,23 @@ public class Tns extends Thread
 
     @Override
     public int peek16(int address) {
-        clk.addTstates(6);
-        int lsb = mem.readByte(address) & 0xff;
+        int lsb = peek8(address) & 0xff;
         address = (address+1) & 0xffff;
-        delayMAP(); delayMAP();
-        return ((mem.readByte(address) << 8) & 0xff00 | lsb);
+        return ((peek8(address) << 8) & 0xff00 | lsb);
     }
 
     @Override
     public void poke16(int address, int word) {
-        clk.addTstates(6);
-        mem.writeByte(address, (byte) word);
+        poke8(address, (byte) word);
         address = (address+1) & 0xffff;
-        mem.writeByte(address, (byte) (word >>> 8));
-        delayMAP(); delayMAP();
+        poke8(address, (byte) (word >>> 8));
     }
 
     @Override
     public int intAck(int address) {
         clk.addTstates(6);
         if (mapa==false) {Arrays.fill(mape, false);}
-        pfle = false;
+        Arrays.fill(pfle, false);
         cpu.setINTLine(false);
         address |= (ap & 0x00fe);
 //        System.out.println(String.format("###intack: %04X", address));
@@ -311,7 +312,7 @@ public class Tns extends Thread
         clk.addTstates(4);
         int tmp = 0x00;       
         
-        pfle = false;  // pfl is turned off by any IN
+        Arrays.fill(pfle, false);  // pfl is turned off by any IN
         delayMAP();
         
         switch(port & 0xff) {
@@ -400,7 +401,7 @@ public class Tns extends Thread
                     pfr = (value & 0x0f) << 16;
                     pfw = (value & 0xf0) << 12;
                     pflp = false;
-                    pfle = true;
+                    pfle[0] = true;
                     break;
                 }
             case 0x5c:
