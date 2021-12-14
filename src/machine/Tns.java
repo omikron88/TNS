@@ -197,7 +197,7 @@ public class Tns extends Thread
     @Override
     public int fetchOpcode(int address) {
         clk.addTstates(4);
-        
+         
         if (runap) {
             ap = ((ap + 2) & 0xfe) | 1;
             if ((testINT(ap) & 1) !=0 )  {
@@ -221,7 +221,7 @@ public class Tns extends Thread
             fdcsync = false;
             opcode = 0x00;      // NOP
         }
-
+  
         delayMAP();
         return opcode;
     }
