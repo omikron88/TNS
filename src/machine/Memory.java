@@ -14,7 +14,7 @@ public final class Memory {
     public final int PAGE_MASK = PAGE_SIZE - 1;
     public final byte PAGE_BIT = 13;
     
-    public int rampages = 32; 
+    public int rampages; 
     
     private byte[][] Ram = new byte[128][PAGE_SIZE];
     private byte[][] VRam = new byte[8][PAGE_SIZE];
