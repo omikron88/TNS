@@ -133,10 +133,10 @@ public class Tns extends Thread
     }
     
     public final void Nmi() {
-//        cpu.setNMI(true);
-//        cpu.execute(clk.getTstates()+8);
-//        cpu.setNMI(false);
-        mem.dumpRam("dump.bin", 0, 7);
+        cpu.setNMI(true);
+        cpu.execute(clk.getTstates()+8);
+        cpu.setNMI(false);
+//        mem.dumpRam("dump.bin", 0, 7);
     }
 
     public void startEmulation() {
@@ -183,11 +183,11 @@ public class Tns extends Thread
     }    
     
     private void delayMAP() {
-        mape[3] = mape[2];  //mapping enable/disable is 2 M1 cycles delayed
+        mape[3] = mape[2];  //mapping enable/disable is 2 cycles delayed
         mape[2] = mape[1];
         mape[1] = mape[0];
         
-        pfle[3] = pfle[2];  //pfl enable is 2 M1 cycles delayed
+        pfle[3] = pfle[2];  //pfl enable is 2 cycles delayed
         pfle[2] = pfle[1];
         pfle[1] = pfle[0];
         
