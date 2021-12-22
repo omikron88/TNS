@@ -59,7 +59,7 @@ public class Tns extends Thread
         tim = new Timer("Timer");
         clk = new Clock();
         cpu = new Z80(clk, this, this);
-        grf = new Grafik(mem, img);
+        grf = new Grafik(this, mem);
         key = new Keyboard();
         wdc = new Wd(this, clk);
 
@@ -83,6 +83,10 @@ public class Tns extends Thread
         
     public void setScreen(Screen screen) {
         scr = screen;
+    }
+    
+    public void reSetPalette() {
+        grf.reSetPalette();
     }
    
     public BufferedImage getImage() {

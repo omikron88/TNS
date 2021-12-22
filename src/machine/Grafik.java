@@ -15,21 +15,36 @@ public final class Grafik {
     private final int ofsx = 64;
     private final int ofsy = 0;
     
-    private final int pal[] = { // index GRBI
+    private final int palc[] = { // index GRBI
         0x000000, 0x000000, 0x0000cc, 0x0000ff, 0xcc0000, 0xff0000, 0xcc00cc, 0xff00ff,
         0x00cc00, 0x00ff00, 0x00cccc, 0x00ffff, 0xcccc00, 0xffff00, 0xcccccc, 0xffffff,
     };
     
+    private final int palb[] = { // index GRBI
+        0x000000, 0x101010, 0x202020, 0x303030, 0x404040, 0x505050, 0x606060, 0x707070,
+        0x808080, 0x909090, 0xa0a0a0, 0xb0b0b0, 0xc0c0c0, 0xd0d0d0, 0xe0e0e0, 0xf0f0f0,
+    };
+    
+    private Tns ma;
     private Memory m;
-    private BufferedImage i; 
+    private BufferedImage i;
+    
+    private int pal[];
     
     private int mode;
     private boolean ir;
     
-    Grafik(Memory mem, BufferedImage img) {
+    Grafik(Tns machine, Memory mem) {
+        ma = machine;
         m = mem;
-        i = img;
+        i = ma.getImage();
         ir = false;
+        
+        pal = ma.getConfig().videobw ? palb : palc;
+    }
+    
+    public void reSetPalette() {
+        pal = ma.getConfig().videobw ? palb : palc;
     }
     
     public void reset() {

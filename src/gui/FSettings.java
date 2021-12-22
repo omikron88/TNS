@@ -41,6 +41,8 @@ public class FSettings extends javax.swing.JDialog {
             default:    { b256.setSelected(true); break; }
         } //switch
         
+        jVideoBW.setSelected(cf.videobw);
+        
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         setLocation((screen.width-getSize().width)/2, (screen.height-getSize().height)/2);
         setModal(true);
@@ -66,6 +68,7 @@ public class FSettings extends javax.swing.JDialog {
         b768 = new javax.swing.JRadioButton();
         b1024 = new javax.swing.JRadioButton();
         bOk = new javax.swing.JButton();
+        jVideoBW = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Settings");
@@ -158,17 +161,31 @@ public class FSettings extends javax.swing.JDialog {
             }
         });
 
+        jVideoBW.setText("Video BW");
+        jVideoBW.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jVideoBWItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(179, 179, 179)
-                .addComponent(bOk)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jRamPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jRamPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(179, 179, 179)
+                                .addComponent(bOk))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jVideoBW)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -176,7 +193,9 @@ public class FSettings extends javax.swing.JDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jRamPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 183, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jVideoBW)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 154, Short.MAX_VALUE)
                 .addComponent(bOk)
                 .addContainerGap())
         );
@@ -214,6 +233,10 @@ public class FSettings extends javax.swing.JDialog {
         ResetNeeded = true;
     }//GEN-LAST:event_b1024ActionPerformed
 
+    private void jVideoBWItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jVideoBWItemStateChanged
+        cf.videobw = jVideoBW.isSelected();
+    }//GEN-LAST:event_jVideoBWItemStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup RamGroup;
     private javax.swing.JRadioButton b1024;
@@ -224,5 +247,6 @@ public class FSettings extends javax.swing.JDialog {
     private javax.swing.JButton bOk;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jRamPanel;
+    private javax.swing.JCheckBox jVideoBW;
     // End of variables declaration//GEN-END:variables
 }

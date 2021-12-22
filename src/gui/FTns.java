@@ -196,6 +196,7 @@ public class FTns extends javax.swing.JFrame {
         }
         set.dispose();
         
+        m.reSetPalette();
         m.getConfig().SaveConfig();
         
         if (!pau) m.startEmulation();

@@ -21,7 +21,9 @@ public class Config {
     public final String filename = "tns.config";
     
     //ukladani settings
-    public int ramsize=256;      //Size of Main RAM in KB
+    public int ramsize = 256;      //Size of Main RAM in KB
+    
+    public boolean videobw = false; // is video BW?
  
     public String drive1 = "";   //Drive 1 image
     public String drive2 = "";   //Drive 2 image
@@ -45,6 +47,7 @@ public class Config {
         prop.setProperty("DRIVE3", drive3);
         prop.setProperty("DRIVE4", drive4);
         prop.setProperty("RAMSIZE", String.valueOf(ramsize));
+        prop.setProperty("VIDEOBW", String.valueOf(videobw));
      
         String fileName = getMyPath() + filename;
         OutputStream os;
@@ -102,6 +105,7 @@ public class Config {
         drive3 = prop.getProperty("DRIVE3");
         drive4 = prop.getProperty("DRIVE4");
         ramsize = parseIntSafe(prop.getProperty("RAMSIZE"),256);
+        videobw = parseBooleanSafe(prop.getProperty("VIDEOBW"),false);
     
     }
 }
