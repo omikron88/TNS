@@ -1,3 +1,9 @@
-Emulator of Czech TNS computer
+Emulator of Czech TNS GC computer
 
-not fully working yet...
+..in alpha state..
+
+Keyboard:
+START = Home
+STOP = End
+ANO = PgUp
+NE = PgDn
