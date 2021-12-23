@@ -167,6 +167,11 @@ public class Wd implements ClockTimeoutListener {
                 doRead(); 
                 break;
             }
+            case 0xa0:
+            case 0xb0: {
+                doWrite(); 
+                break;
+            }            
             case 0xc0: {
                 doRdHd(); 
                 break;
@@ -387,12 +392,43 @@ public class Wd implements ClockTimeoutListener {
                 bb[4] = (byte) 0x81;
                 bb[5] = (byte) 0x82;
                 cnt = 0;
+                sec++;
+                if (sec>d.sectors) sec = 1;
                 if ((mode&0x08)!=0) { 
                     buff.put(bb, 6);
                     cnt = 6;
                     clk.setTimeout(50);
                 }
                 stat = HEAD;
+                res |= R_DREQ;
+            }
+            else {
+                res = R_NFND;
+                ir = true;
+            }
+        }
+    }
+
+    private void doWrite() {
+        if (open==0) {
+            res = R_NRDY;
+        }
+        else {
+            if (find()==true) {
+                res = R_BUSY;
+                try {
+                    f.seek(position);
+                    cnt = 0;
+                    if ((mode&0x08)!=0) {
+                        cnt = d.bps;
+                        buff.get(bb, cnt);
+                        f.write(bb, 0, d.bps);
+                        clk.setTimeout(50);
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(Wd.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                stat = WRITE;
                 res |= R_DREQ;
             }
             else {
