@@ -149,10 +149,9 @@ private void g2() {
                 bd = pal[ad & 0x0f];
                 ad = pal[(ad >> 4)& 0x0f];
                 c = x * 4 + ofsx;
-                i.setRGB(c++, d, ad);i.setRGB(c++, d, ad);
                 i.setRGB(c++, d, bd);i.setRGB(c++, d, bd);
+                i.setRGB(c++, d, ad);i.setRGB(c++, d, ad);
             }       
          }
         }
-
 }
