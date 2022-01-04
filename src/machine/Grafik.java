@@ -111,6 +111,11 @@ public final class Grafik {
                 }
             }       
         }
+        for (int y=(252+ofsy); y<(256+ofsy); y++) {
+            for (int x=(0+ofsx); x<(512+ofsx); x++) {
+                i.setRGB(x, y, 0);
+                }
+            }
     }
 
 private void g1() {
