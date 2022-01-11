@@ -34,6 +34,7 @@ public class Tns extends Thread
     private Z80 cpu;
     private Grafik grf;
     private Wd wdc;
+    private Wap wap;
     
     public JLabel Led1, Led2, Led3, Led4;
     
@@ -62,6 +63,7 @@ public class Tns extends Thread
         grf = new Grafik(this, mem);
         key = new Keyboard();
         wdc = new Wd(this, clk);
+        wap = new Wap(this);
 
         paused = true;
         
@@ -79,6 +81,10 @@ public class Tns extends Thread
     
     public Wd getWDC() {
         return wdc;
+    }
+    
+    public Wap getWAP() {
+        return wap;
     }
         
     public void setScreen(Screen screen) {
@@ -134,6 +140,7 @@ public class Tns extends Thread
         grf.reset();
         key.reset();
         wdc.reset();
+        wap.reset();
     }
     
     public final void Nmi() {
@@ -301,12 +308,11 @@ public class Tns extends Thread
  
     private int testINT(int port) {
         switch(port & 0xff) {
-            case 0x2d:
-                return grf.isInt();
-            case 0x2f:
-                return key.isKey();
-            case 0x61:
-                return wdc.isInt();
+            case 0x2d: return grf.isInt();
+            case 0x2f: return key.isKey();
+            case 0x59: return wap.isWInt();
+            case 0x5b: return wap.isRInt();
+            case 0x61: return wdc.isInt();
         }    
         return 0;
     }
@@ -330,6 +336,12 @@ public class Tns extends Thread
                 return key.isKey();
             case 0x3a:
                 return 0;  // dummy - pfl is turned off by any IN
+            case 0x59:
+                return wap.isWInt();
+            case 0x5a:
+                return wap.wapIn();
+            case 0x5b:
+                return wap.isRInt();
             case 0x5c:
                 {
                     int val;
@@ -369,7 +381,7 @@ public class Tns extends Thread
             tmp |= mask[ap>>>1] ? 0x08 : 0x00; 
         }
         else {
-            System.out.println(String.format("In: %04X (%04X)",port,cpu.getRegPC()));
+//            System.out.println(String.format("In: %04X (%04X)",port,cpu.getRegPC()));
         }
         return tmp;
     }
@@ -406,6 +418,16 @@ public class Tns extends Thread
                     pfw = (value & 0xf0) << 12;
                     pflp = false;
                     pfle[0] = true;
+                    break;
+                }
+            case 0x58: 
+                {
+                    wap.wapOut(value);
+                    break;
+                }
+            case 0x5a: 
+                {
+                    // APK second port
                     break;
                 }
             case 0x5c:

@@ -215,6 +215,7 @@ public class FTns extends javax.swing.JFrame {
         cf.drive2 = m.getWDC().getImage(2);
         cf.drive3 = m.getWDC().getImage(3);
         cf.drive4 = m.getWDC().getImage(4);
+        cf.hdd = m.getWAP().getImage();
         cf.SaveConfig();
         
         if (!pau) m.startEmulation();

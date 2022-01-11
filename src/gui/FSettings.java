@@ -162,15 +162,19 @@ public class FSettings extends javax.swing.JDialog {
 
         jDrvType1.setFont(new java.awt.Font("Courier 10 Pitch", 0, 15)); // NOI18N
         jDrvType1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8''        SS SD    77 tracks", "5.25'' DS DD  40 tracks" }));
+        jDrvType1.setEnabled(false);
 
         jDrvType2.setFont(new java.awt.Font("Courier 10 Pitch", 0, 15)); // NOI18N
         jDrvType2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8''        SS SD    77 tracks", "5.25'' DS DD  40 tracks" }));
+        jDrvType2.setEnabled(false);
 
         jDrvType3.setFont(new java.awt.Font("Courier 10 Pitch", 0, 15)); // NOI18N
         jDrvType3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8''        SS SD    77 tracks", "5.25'' DS DD  40 tracks" }));
+        jDrvType3.setEnabled(false);
 
         jDrvType4.setFont(new java.awt.Font("Courier 10 Pitch", 0, 15)); // NOI18N
         jDrvType4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8''        SS SD    77 tracks", "5.25'' DS DD  40 tracks" }));
+        jDrvType4.setEnabled(false);
 
         javax.swing.GroupLayout jDriveTypeLayout = new javax.swing.GroupLayout(jDriveType);
         jDriveType.setLayout(jDriveTypeLayout);

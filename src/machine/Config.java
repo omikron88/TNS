@@ -29,7 +29,8 @@ public class Config {
     public String drive2 = "";   //Drive 2 image
     public String drive3 = "";   //Drive 3 image
     public String drive4 = "";   //Drive 4 image
-
+    public String hdd = "";   //HDD image
+    
     public String getMyPath() {
         String retVal = "";
         retVal = Tns.class.getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -46,6 +47,7 @@ public class Config {
         prop.setProperty("DRIVE2", drive2);
         prop.setProperty("DRIVE3", drive3);
         prop.setProperty("DRIVE4", drive4);
+        prop.setProperty("HDD", hdd);
         prop.setProperty("RAMSIZE", String.valueOf(ramsize));
         prop.setProperty("VIDEOBW", String.valueOf(videobw));
      
@@ -104,6 +106,7 @@ public class Config {
         drive2 = prop.getProperty("DRIVE2");
         drive3 = prop.getProperty("DRIVE3");
         drive4 = prop.getProperty("DRIVE4");
+        hdd = prop.getProperty("HDD");
         ramsize = parseIntSafe(prop.getProperty("RAMSIZE"),256);
         videobw = parseBooleanSafe(prop.getProperty("VIDEOBW"),false);
     

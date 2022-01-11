@@ -17,6 +17,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import machine.Tns;
+import machine.Wap;
 import machine.Wd;
 import utils.DriveGeom;
 
@@ -28,11 +29,15 @@ public class FDrives extends javax.swing.JDialog {
     
     private Tns tns;
     private Wd wd;
+    private Wap wap;
     private File dir;
     
-    private final String imageExt[] = {".img",".8sd"};
+    private final String imageExt[] = {".img",".8sd","cpm"};
+    private final String hdExt[] = {".hdd"};
     private final ExtendedFileFilter imageFlt = new ExtendedFileFilter
             ("Image files",imageExt);
+    private final ExtendedFileFilter hddFlt = new ExtendedFileFilter
+            ("HDD images",hdExt);
     
     /**
      * Creates new form FDrives
@@ -45,6 +50,7 @@ public class FDrives extends javax.swing.JDialog {
         
         tns = t;
         wd = tns.getWDC();
+        wap = tns.getWAP();
         dir = new File(tns.getConfig().getMyPath());
         int use = wd.isInUse();
         
@@ -52,6 +58,7 @@ public class FDrives extends javax.swing.JDialog {
         path2.setText(wd.getImage(2));
         path3.setText(wd.getImage(3));
         path4.setText(wd.getImage(4));
+        path5.setText(wap.getImage());        
         
         path1.setEnabled(use != 1);
         open1.setEnabled(use != 1);
@@ -96,8 +103,30 @@ public class FDrives extends javax.swing.JDialog {
         }        
     }
     
+    private void chooseHDDImage(String title, JTextField t) {
+        fc.setDialogTitle(title);
+        fc.resetChoosableFileFilters();
+        fc.setAcceptAllFileFilterUsed(true);
+        fc.setFileFilter(hddFlt);
+        fc.setCurrentDirectory(dir);
+        int val = fc.showOpenDialog(this);      
+        if (val==JFileChooser.APPROVE_OPTION) {
+            try {
+                wap.insertImage(fc.getSelectedFile().getCanonicalPath());
+                t.setText(wap.getImage());
+            } catch (IOException ex) {
+                Logger.getLogger(FDrives.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }        
+    }
+    
     private void ejectImage(int num, JTextField t) {
         wd.ejectImage(num);
+        t.setText("");
+    }
+    
+    private void ejectHDDImage(JTextField t) {
+        wap.ejectImage();
         t.setText("");
     }
     
@@ -132,6 +161,36 @@ public class FDrives extends javax.swing.JDialog {
         }        
     }
         
+    private void newHDDImage(String title, JTextField t) {
+        Random r=new Random();
+        String fn = String.format("new-%04X.hdd", r.nextInt(0x10000));
+        RandomAccessFile f;
+        byte b[];
+        
+        fc.setDialogTitle(title);
+        fc.resetChoosableFileFilters();
+        fc.setAcceptAllFileFilterUsed(true);
+        fc.setFileFilter(new FileNameExtensionFilter("HDD images", "hdd"));
+        fc.setCurrentDirectory(dir);
+        fc.setSelectedFile(new File(fn));
+        int val = fc.showSaveDialog(this);      
+        if (val==JFileChooser.APPROVE_OPTION) {
+            try {
+                fn = fc.getSelectedFile().getCanonicalPath();
+                f =  new RandomAccessFile(fn, "rw");
+                b = new byte[64*128];             // SPT * S
+                Arrays.fill(b, (byte) 0xe5);
+                int n, m = 2610;                  // T
+                for(n=0; n<m; n++) { f.write(b); }
+                f.close();
+                wap.insertImage(fn);
+                t.setText(fn);
+            } catch (IOException ex) {
+                Logger.getLogger(FDrives.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }        
+    }
+        
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -143,7 +202,6 @@ public class FDrives extends javax.swing.JDialog {
 
         fc = new javax.swing.JFileChooser();
         panel = new javax.swing.JPanel();
-        bOk = new javax.swing.JButton();
         panel1 = new javax.swing.JPanel();
         label1 = new javax.swing.JLabel();
         path1 = new javax.swing.JTextField();
@@ -168,26 +226,25 @@ public class FDrives extends javax.swing.JDialog {
         open4 = new javax.swing.JButton();
         eject4 = new javax.swing.JButton();
         new4 = new javax.swing.JButton();
+        panel5 = new javax.swing.JPanel();
+        label5 = new javax.swing.JLabel();
+        path5 = new javax.swing.JTextField();
+        open5 = new javax.swing.JButton();
+        eject5 = new javax.swing.JButton();
+        new5 = new javax.swing.JButton();
+        bOk = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Drives");
         setAlwaysOnTop(true);
-        setMaximumSize(new java.awt.Dimension(390, 353));
-        setMinimumSize(new java.awt.Dimension(390, 353));
+        setLocationByPlatform(true);
+        setMinimumSize(new java.awt.Dimension(396, 468));
         setModal(true);
         setName("DrivesDlg"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(390, 353));
         setResizable(false);
         getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
         panel.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
-
-        bOk.setText("Ok");
-        bOk.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bOkActionPerformed(evt);
-            }
-        });
 
         panel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -429,6 +486,73 @@ public class FDrives extends javax.swing.JDialog {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        panel5.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        label5.setText("H");
+
+        path5.setEditable(false);
+
+        open5.setText("O");
+        open5.setPreferredSize(new java.awt.Dimension(40, 30));
+        open5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                open5ActionPerformed(evt);
+            }
+        });
+
+        eject5.setText("E");
+        eject5.setPreferredSize(new java.awt.Dimension(40, 30));
+        eject5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                eject5ActionPerformed(evt);
+            }
+        });
+
+        new5.setText("N");
+        new5.setPreferredSize(new java.awt.Dimension(40, 30));
+        new5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                new5ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout panel5Layout = new javax.swing.GroupLayout(panel5);
+        panel5.setLayout(panel5Layout);
+        panel5Layout.setHorizontalGroup(
+            panel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(label5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(path5, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(open5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(eject5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(new5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        panel5Layout.setVerticalGroup(
+            panel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(label5)
+                    .addComponent(path5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(open5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(eject5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(new5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        bOk.setText("Ok");
+        bOk.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bOkActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
         panel.setLayout(panelLayout);
         panelLayout.setHorizontalGroup(
@@ -450,13 +574,16 @@ public class FDrives extends javax.swing.JDialog {
                     .addGroup(panelLayout.createSequentialGroup()
                         .addGap(164, 164, 164)
                         .addComponent(bOk)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(panelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(panel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addComponent(panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(panel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -464,7 +591,9 @@ public class FDrives extends javax.swing.JDialog {
                 .addComponent(panel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(panel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
+                .addGap(18, 18, 18)
+                .addComponent(panel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
                 .addComponent(bOk)
                 .addContainerGap())
         );
@@ -524,6 +653,18 @@ public class FDrives extends javax.swing.JDialog {
     private void new4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_new4ActionPerformed
         newImage(4, "Create new image for drive 4", path4);
     }//GEN-LAST:event_new4ActionPerformed
+
+    private void open5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_open5ActionPerformed
+        chooseHDDImage("Select HDD image", path5);
+    }//GEN-LAST:event_open5ActionPerformed
+
+    private void eject5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eject5ActionPerformed
+        ejectHDDImage(path5);
+    }//GEN-LAST:event_eject5ActionPerformed
+
+    private void new5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_new5ActionPerformed
+        newHDDImage("Create new HDD image", path5);
+    }//GEN-LAST:event_new5ActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bOk;
@@ -531,27 +672,33 @@ public class FDrives extends javax.swing.JDialog {
     private javax.swing.JButton eject2;
     private javax.swing.JButton eject3;
     private javax.swing.JButton eject4;
+    private javax.swing.JButton eject5;
     private javax.swing.JFileChooser fc;
     private javax.swing.JLabel label1;
     private javax.swing.JLabel label2;
     private javax.swing.JLabel label3;
     private javax.swing.JLabel label4;
+    private javax.swing.JLabel label5;
     private javax.swing.JButton new1;
     private javax.swing.JButton new2;
     private javax.swing.JButton new3;
     private javax.swing.JButton new4;
+    private javax.swing.JButton new5;
     private javax.swing.JButton open1;
     private javax.swing.JButton open2;
     private javax.swing.JButton open3;
     private javax.swing.JButton open4;
+    private javax.swing.JButton open5;
     private javax.swing.JPanel panel;
     private javax.swing.JPanel panel1;
     private javax.swing.JPanel panel2;
     private javax.swing.JPanel panel3;
     private javax.swing.JPanel panel4;
+    private javax.swing.JPanel panel5;
     private javax.swing.JTextField path1;
     private javax.swing.JTextField path2;
     private javax.swing.JTextField path3;
     private javax.swing.JTextField path4;
+    private javax.swing.JTextField path5;
     // End of variables declaration//GEN-END:variables
 }
