@@ -40,6 +40,9 @@ public class FSettings extends javax.swing.JDialog {
             case 1024:  { b1024.setSelected(true); break; }
             default:    { b256.setSelected(true); break; }
         } //switch
+
+        if (cf.videoitk) {bITK.setSelected(true);}
+        else {bBGD.setSelected(true);}
         
         jVideoBW.setSelected(cf.videobw);
         
@@ -48,7 +51,6 @@ public class FSettings extends javax.swing.JDialog {
         setModal(true);
         setVisible(true);
     }
-    
   
     /**
      * This method is called from within the constructor to initialize the form.
@@ -60,6 +62,7 @@ public class FSettings extends javax.swing.JDialog {
     private void initComponents() {
 
         RamGroup = new javax.swing.ButtonGroup();
+        GraphicsGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jRamPanel = new javax.swing.JPanel();
         b64 = new javax.swing.JRadioButton();
@@ -67,11 +70,9 @@ public class FSettings extends javax.swing.JDialog {
         b512 = new javax.swing.JRadioButton();
         b768 = new javax.swing.JRadioButton();
         b1024 = new javax.swing.JRadioButton();
-        jDriveType = new javax.swing.JPanel();
-        jDrvType1 = new javax.swing.JComboBox<>();
-        jDrvType2 = new javax.swing.JComboBox<>();
-        jDrvType3 = new javax.swing.JComboBox<>();
-        jDrvType4 = new javax.swing.JComboBox<>();
+        jGraphPanel = new javax.swing.JPanel();
+        bBGD = new javax.swing.JRadioButton();
+        bITK = new javax.swing.JRadioButton();
         jVideoBW = new javax.swing.JCheckBox();
         bOk = new javax.swing.JButton();
 
@@ -135,7 +136,7 @@ public class FSettings extends javax.swing.JDialog {
             jRamPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jRamPanelLayout.createSequentialGroup()
                 .addComponent(b64)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addComponent(b256)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(b512)
@@ -155,51 +156,48 @@ public class FSettings extends javax.swing.JDialog {
                     .addComponent(b768)
                     .addComponent(b1024)
                     .addComponent(b64))
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
-        jDriveType.setBorder(javax.swing.BorderFactory.createTitledBorder("Drive type"));
+        jGraphPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Graphics"));
+        jGraphPanel.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jGraphPanel.setName("Graphics"); // NOI18N
 
-        jDrvType1.setFont(new java.awt.Font("Courier 10 Pitch", 0, 15)); // NOI18N
-        jDrvType1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8''        SS SD    77 tracks", "5.25'' DS DD  40 tracks" }));
-        jDrvType1.setEnabled(false);
+        GraphicsGroup.add(bBGD);
+        bBGD.setText("BGD");
+        bBGD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bBGDActionPerformed(evt);
+            }
+        });
 
-        jDrvType2.setFont(new java.awt.Font("Courier 10 Pitch", 0, 15)); // NOI18N
-        jDrvType2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8''        SS SD    77 tracks", "5.25'' DS DD  40 tracks" }));
-        jDrvType2.setEnabled(false);
+        GraphicsGroup.add(bITK);
+        bITK.setText("ITK");
+        bITK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bITKActionPerformed(evt);
+            }
+        });
 
-        jDrvType3.setFont(new java.awt.Font("Courier 10 Pitch", 0, 15)); // NOI18N
-        jDrvType3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8''        SS SD    77 tracks", "5.25'' DS DD  40 tracks" }));
-        jDrvType3.setEnabled(false);
-
-        jDrvType4.setFont(new java.awt.Font("Courier 10 Pitch", 0, 15)); // NOI18N
-        jDrvType4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8''        SS SD    77 tracks", "5.25'' DS DD  40 tracks" }));
-        jDrvType4.setEnabled(false);
-
-        javax.swing.GroupLayout jDriveTypeLayout = new javax.swing.GroupLayout(jDriveType);
-        jDriveType.setLayout(jDriveTypeLayout);
-        jDriveTypeLayout.setHorizontalGroup(
-            jDriveTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jDriveTypeLayout.createSequentialGroup()
+        javax.swing.GroupLayout jGraphPanelLayout = new javax.swing.GroupLayout(jGraphPanel);
+        jGraphPanel.setLayout(jGraphPanelLayout);
+        jGraphPanelLayout.setHorizontalGroup(
+            jGraphPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jGraphPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jDriveTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jDrvType1, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jDrvType2, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jDrvType3, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jDrvType4, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(bBGD)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(bITK)
+                .addContainerGap())
         );
-        jDriveTypeLayout.setVerticalGroup(
-            jDriveTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jDriveTypeLayout.createSequentialGroup()
-                .addComponent(jDrvType1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jDrvType2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jDrvType3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jDrvType4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        jGraphPanelLayout.setVerticalGroup(
+            jGraphPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jGraphPanelLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jGraphPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bBGD)
+                    .addComponent(bITK))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         jVideoBW.setText("Video BW");
@@ -221,29 +219,34 @@ public class FSettings extends javax.swing.JDialog {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jRamPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jDriveType, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
                         .addComponent(jVideoBW)
-                        .addGap(80, 80, 80)
-                        .addComponent(bOk)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jRamPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jGraphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(207, 207, 207)
+                .addComponent(bOk)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jRamPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
+                .addComponent(jGraphPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jVideoBW)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jDriveType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(bOk)
-                    .addComponent(jVideoBW))
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addComponent(bOk)
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel1);
@@ -283,19 +286,28 @@ public class FSettings extends javax.swing.JDialog {
         cf.videobw = jVideoBW.isSelected();
     }//GEN-LAST:event_jVideoBWItemStateChanged
 
+    private void bBGDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bBGDActionPerformed
+        cf.videoitk = false;
+        ResetNeeded = true;
+    }//GEN-LAST:event_bBGDActionPerformed
+
+    private void bITKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bITKActionPerformed
+        cf.videoitk = true;
+        ResetNeeded = true;
+    }//GEN-LAST:event_bITKActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup GraphicsGroup;
     private javax.swing.ButtonGroup RamGroup;
     private javax.swing.JRadioButton b1024;
     private javax.swing.JRadioButton b256;
     private javax.swing.JRadioButton b512;
     private javax.swing.JRadioButton b64;
     private javax.swing.JRadioButton b768;
+    private javax.swing.JRadioButton bBGD;
+    private javax.swing.JRadioButton bITK;
     private javax.swing.JButton bOk;
-    private javax.swing.JPanel jDriveType;
-    private javax.swing.JComboBox<String> jDrvType1;
-    private javax.swing.JComboBox<String> jDrvType2;
-    private javax.swing.JComboBox<String> jDrvType3;
-    private javax.swing.JComboBox<String> jDrvType4;
+    private javax.swing.JPanel jGraphPanel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jRamPanel;
     private javax.swing.JCheckBox jVideoBW;

@@ -18,9 +18,11 @@ public final class Memory {
     
     private byte[][] Ram = new byte[128][PAGE_SIZE];
     private byte[][] VRam = new byte[8][PAGE_SIZE];
-    private byte[][] Boot = new byte[1][PAGE_SIZE];
+    private byte[][] BootG = new byte[1][PAGE_SIZE];
+    private byte[][] BootS = new byte[1][PAGE_SIZE];
     private byte[][] Char = new byte[1][PAGE_SIZE];
-
+    private byte[][] IChar = new byte[1][PAGE_SIZE];
+    
     private byte[] fakeRAM = new byte[PAGE_SIZE];  // contains FFs for no memory
     private byte[] nullRAM = new byte[PAGE_SIZE];  // for no mem writes
     private byte[][] readPages = new byte[128][];
@@ -65,11 +67,13 @@ public final class Memory {
                 readPages[i] = writePages[i] = Ram[i];   
             }
 
-        int a = 0x0e0000 >>> PAGE_BIT;
-        for(int i=0; i<8; i++) {
+        if (!cf.videoitk) {
+            int a = 0x0e0000 >>> PAGE_BIT;
+            for(int i=0; i<8; i++) {
                 readPages[a] = writePages[a] = VRam[i];
                 a++;
             }
+        }
     }  
     
     public void dumpRam(String fname, int first, int last) {
@@ -86,6 +90,10 @@ public final class Memory {
         
     }
     
+    public byte readIChar(int address) {
+        return IChar[address >>> PAGE_BIT][address & PAGE_MASK];
+    }
+
     public byte readChar(int address) {
         return Char[address >>> PAGE_BIT][address & PAGE_MASK];
     }
@@ -107,7 +115,7 @@ public final class Memory {
             readPages[0] = writePages[0];
         }
         else {
-            readPages[0] = Boot[0];
+            readPages[0] = (cf.videoitk) ? BootS[0] : BootG[0];
         }
     }
     
@@ -115,8 +123,14 @@ public final class Memory {
         if (!loadRomAsFile("roms/chars.bin", Char, 0, PAGE_SIZE)) {
             loadRomAsResource("/roms/chars.bin", Char, 0, PAGE_SIZE);
         }
-        if (!loadRomAsFile("roms/bootGC.bin", Boot, 0, PAGE_SIZE)) {
-            loadRomAsResource("/roms/bootGC.bin", Boot, 0, PAGE_SIZE);
+        if (!loadRomAsFile("roms/charsITK.bin", IChar, 0, PAGE_SIZE)) {
+            loadRomAsResource("/roms/charsITK.bin", IChar, 0, PAGE_SIZE);
+        }
+        if (!loadRomAsFile("roms/bootGC.bin", BootG, 0, PAGE_SIZE)) {
+            loadRomAsResource("/roms/bootGC.bin", BootG, 0, PAGE_SIZE);
+        }
+        if (!loadRomAsFile("roms/bootSC.bin", BootS, 0, PAGE_SIZE)) {
+            loadRomAsResource("/roms/bootSC.bin", BootS, 0, PAGE_SIZE);
         }
     }
 

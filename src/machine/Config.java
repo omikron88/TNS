@@ -24,7 +24,8 @@ public class Config {
     public int ramsize = 256;      //Size of Main RAM in KB
     
     public boolean videobw = false; // is video BW?
- 
+    public boolean videoitk = false; // is video ITK?
+    
     public String drive1 = "";   //Drive 1 image
     public String drive2 = "";   //Drive 2 image
     public String drive3 = "";   //Drive 3 image
@@ -50,6 +51,7 @@ public class Config {
         prop.setProperty("HDD", hdd);
         prop.setProperty("RAMSIZE", String.valueOf(ramsize));
         prop.setProperty("VIDEOBW", String.valueOf(videobw));
+        prop.setProperty("VIDEOITK", String.valueOf(videoitk));
      
         String fileName = getMyPath() + filename;
         OutputStream os;
@@ -109,6 +111,6 @@ public class Config {
         hdd = prop.getProperty("HDD");
         ramsize = parseIntSafe(prop.getProperty("RAMSIZE"),256);
         videobw = parseBooleanSafe(prop.getProperty("VIDEOBW"),false);
-    
+        videoitk = parseBooleanSafe(prop.getProperty("VIDEOITK"),false);
     }
 }

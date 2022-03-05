@@ -22,6 +22,7 @@ public class Tns extends Thread
     
     private final int TNS_VERSION = 0x01; //version 0.1
     private final int t_frame     = 40000; //pocet T procesoru mezi dvema Vsync
+    private final int t_blank     = 1000; //pocet T procesoru zatemneni
     
     private Screen scr;
     private BufferedImage img;
@@ -33,6 +34,7 @@ public class Tns extends Thread
     private Clock clk;
     private Z80 cpu;
     private Grafik grf;
+    private Itk itk;
     private Wd wdc;
     private Wap wap;
     
@@ -42,6 +44,7 @@ public class Tns extends Thread
     private boolean boot;
     private boolean fdcsync;
     private boolean runap;
+    private boolean blank;
     
     private int ap;
     private boolean mask[];
@@ -61,6 +64,7 @@ public class Tns extends Thread
         clk = new Clock();
         cpu = new Z80(clk, this, this);
         grf = new Grafik(this, mem);
+        itk = new Itk(this, mem);
         key = new Keyboard();
         wdc = new Wd(this, clk);
         wap = new Wap(this);
@@ -92,7 +96,8 @@ public class Tns extends Thread
     }
     
     public void reSetPalette() {
-        grf.reSetPalette();
+        if (cfg.videoitk) {itk.reSetPalette();}
+        else {grf.reSetPalette();}
     }
    
     public BufferedImage getImage() {
@@ -170,12 +175,25 @@ public class Tns extends Thread
         return paused;
     }
     
+    public int isBlank() {
+        return blank ? 2:0;
+    }
+    
     public void ms20() {        
-        if (!paused) {           
-            cpu.execute(clk.getTstates()+t_frame);
-            grf.vSync();
-            grf.paint();
+        if (!paused) {
+            if (cfg.videoitk) {
+                itk.vSync();
+                itk.paint();
+            }
+            else {
+                grf.vSync();
+                grf.paint();
+            }
             scr.repaint();
+            blank = true;
+            cpu.execute(clk.getTstates()+t_blank);
+            blank = false;
+            cpu.execute(clk.getTstates()+(t_frame-t_blank));
         }  
     }
     
@@ -308,11 +326,13 @@ public class Tns extends Thread
  
     private int testINT(int port) {
         switch(port & 0xff) {
-            case 0x2d: return grf.isInt();
-            case 0x2f: return key.isKey();
+            case 0x2d: return (!cfg.videoitk) ? grf.isInt() : 0;
+            case 0x2f: return (!cfg.videoitk) ? key.isKey() : 0;
             case 0x59: return wap.isWInt();
             case 0x5b: return wap.isRInt();
             case 0x61: return wdc.isInt();
+            case 0xb1: return (cfg.videoitk) ? itk.isInt() : 0;
+            case 0xb9: return (cfg.videoitk) ? key.isKey() : 0;
         }    
         return 0;
     }
@@ -327,13 +347,13 @@ public class Tns extends Thread
         
         switch(port & 0xff) {
             case 0x2c:
-                return grf.getMode();
+                return (!cfg.videoitk) ? grf.getMode() : 0;
             case 0x2d:
-                return grf.isInt();
+                return (!cfg.videoitk) ? grf.isInt() : 0;
             case 0x2e:
-                return key.getKey(); 
+                return (!cfg.videoitk) ? key.getKey() : 0; 
             case 0x2f:
-                return key.isKey();
+                return (!cfg.videoitk) ? key.isKey() : 0;
             case 0x3a:
                 return 0;  // dummy - pfl is turned off by any IN
             case 0x59:
@@ -375,6 +395,14 @@ public class Tns extends Thread
                 return wdc.getBuf();
             case 0x61:
                 return wdc.isInt();
+            case 0xb0:
+                return (cfg.videoitk) ? itk.getMode() : 0;
+            case 0xb1:
+                return (cfg.videoitk) ? itk.isInt() : 0;
+            case 0xb8:
+                return (cfg.videoitk) ? key.getKey() : 0;
+            case 0xb9:
+                return (cfg.videoitk) ? key.isKey()|isBlank() : 0;                
         }
         
         if ((port & 0x0001) != 0) {
@@ -408,7 +436,7 @@ public class Tns extends Thread
             case 0x2c:
                 {
 //                    System.out.println(String.format("BGD: %04X,%02X (%04X)", port,value,cpu.getRegPC()));
-                    grf.setMode(value);
+                    if (!cfg.videoitk) grf.setMode(value);
                     break;
                 }
             case 0x3a:
@@ -465,6 +493,8 @@ public class Tns extends Thread
                 {fdcsync = true; break;}
             case 0x6E:
                 {wdc.setMode(value); break;}
+            case 0xB0:
+                {if (cfg.videoitk) {grf.setMode(value);} break;}
             default: 
             {
                 if ((port & 0x0001) == 0) {

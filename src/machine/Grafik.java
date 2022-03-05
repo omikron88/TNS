@@ -57,6 +57,7 @@ public final class Grafik {
     }
     
     public void setMode(int mod) {
+        ir = false;
         mode = mod;
     }
     
@@ -66,7 +67,9 @@ public final class Grafik {
     }
     
     public int isInt() {
-        return ir ? 1:0;
+        boolean tmp = ir;
+        ir = false;
+        return tmp ? 1:0;
     }
     
     public void paint() {
